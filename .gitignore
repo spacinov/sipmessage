@@ -1,0 +1,13 @@
+# Build artifacts
+*.mo
+*.pyc
+.mypy_cache
+
+# Test artifacts
+.coverage*
+tests.log
+
+# Editor / IDE files
+.vscode
+.*.swp
+tags
