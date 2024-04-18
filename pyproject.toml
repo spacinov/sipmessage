@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Version
+name = "sipmessage"
+version = "0.1.0"
+
+# Dependencies
+dependencies = []
+requires-python = ">= 3.9"
+
+# Developmeent
+authors = [
+    {name = "Spacinov Engineering", email="opensource@spacinov.com"},
+]
+license = {text = "BSD License"}
+readme = {file = "README.rst", content-type = "x-rst"}
+
+# PyPI
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Telecommunications Industry",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Communications :: Telephony",
+    "Typing :: Typed",
+]
+keywords = ["SIP", "RFC3261"]
+
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "ruff",
+]
+
+[project.urls]
+Homepage = "https://sipmessage.readthedocs.io/"
+Documentation = "https://sipmessage.readthedocs.io/"
+Repository = "https://github.com/spacinov/sipmessage"
+Issues = "https://github.com/spacinov/sipmessage/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sipmessage"]
+namespaces = false

@@ -11,3 +11,7 @@ tests.log
 .vscode
 .*.swp
 tags
+
+# Packaging
+build/
+dist/
