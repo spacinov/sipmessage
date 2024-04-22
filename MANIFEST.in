@@ -1,0 +1,7 @@
+include ChangeLog LICENSE README.rst
+include Makefile
+
+graft src
+graft tests
+
+global-exclude *.py[cod] __pycache__ .*.sw[po]
