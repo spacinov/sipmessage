@@ -1,9 +1,13 @@
-lint: 
-	ruff check
-	ruff format --check --diff
+setup-test:
+	pip install --upgrade pip setuptools wheel
+	pip install --editable .[dev]
 
-test:
-	coverage erase
-	coverage run -m unittest
-	coverage report
-	coverage xml
+.PHONY: setup-test
+
+lint: lint-pkg
+
+lint-pkg:
+	check-manifest
+	pyroma --directory .
+
+.PHONY: lint lint-pkg

@@ -16,6 +16,9 @@ authors = [
     {name = "Spacinov Engineering", email="opensource@spacinov.com"},
 ]
 license = {text = "BSD License"}
+
+# Description
+description = "Pure python parsing of SIP messages and headers"
 readme = {file = "README.rst", content-type = "x-rst"}
 
 # PyPI
@@ -26,7 +29,10 @@ classifiers = [
     "Intended Audience :: Telecommunications Industry",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Communications :: Telephony",
     "Typing :: Typed",
 ]
@@ -34,7 +40,9 @@ keywords = ["SIP", "RFC3261"]
 
 [project.optional-dependencies]
 dev = [
+    "check-manifest",
     "coverage",
+    "pyroma",
     "ruff",
 ]
 
