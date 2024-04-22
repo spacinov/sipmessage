@@ -5,6 +5,7 @@
 
 # Test artifacts
 .coverage*
+htmlcov/
 tests.log
 
 # Editor / IDE files

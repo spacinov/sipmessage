@@ -42,6 +42,7 @@ keywords = ["SIP", "RFC3261"]
 dev = [
     "check-manifest",
     "coverage",
+    "mypy",
     "pyroma",
     "ruff",
 ]
@@ -52,7 +53,23 @@ Documentation = "https://sipmessage.readthedocs.io/"
 Repository = "https://github.com/spacinov/sipmessage"
 Issues = "https://github.com/spacinov/sipmessage/issues"
 
+[tool.coverage.run]
+include = ["src/*"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["sipmessage"]
 namespaces = false
+
+[tool.mypy]
+ignore_missing_imports = false
+strict = true
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle
+    "F",  # Pyflakes
+    "W",  # pycodestyle
+    "I",  # isort
+    "T20",  # flake8-print
+]
