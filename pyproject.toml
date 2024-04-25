@@ -9,7 +9,7 @@ version = "0.1.0"
 
 # Dependencies
 dependencies = []
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 
 # Developmeent
 authors = [
@@ -29,7 +29,6 @@ classifiers = [
     "Intended Audience :: Telecommunications Industry",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
