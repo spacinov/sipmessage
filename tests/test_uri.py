@@ -9,7 +9,7 @@ from sipmessage.uri import URI
 
 
 class URITest(unittest.TestCase):
-    def test_host(self):
+    def test_host(self) -> None:
         uri = URI.parse("sip:atlanta.com")
 
         self.assertEqual(uri.host, "atlanta.com")
@@ -20,7 +20,7 @@ class URITest(unittest.TestCase):
 
         self.assertEqual(str(uri), "sip:atlanta.com")
 
-    def test_host_and_parameter_without_value(self):
+    def test_host_and_parameter_without_value(self) -> None:
         uri = URI.parse("sip:1.2.3.4;lr")
 
         self.assertEqual(uri.host, "1.2.3.4")
@@ -34,7 +34,7 @@ class URITest(unittest.TestCase):
 
         self.assertEqual(str(uri), "sip:1.2.3.4;lr")
 
-    def test_user_and_host(self):
+    def test_user_and_host(self) -> None:
         uri = URI.parse("sip:alice@atlanta.com")
 
         self.assertEqual(uri.host, "atlanta.com")
@@ -45,7 +45,7 @@ class URITest(unittest.TestCase):
 
         self.assertEqual(str(uri), "sip:alice@atlanta.com")
 
-    def test_user_and_host_and_parameters(self):
+    def test_user_and_host_and_parameters(self) -> None:
         uri = URI.parse("sip:alice@atlanta.com;maddr=239.255.255.1;ttl=15")
 
         self.assertEqual(uri.host, "atlanta.com")
@@ -62,7 +62,7 @@ class URITest(unittest.TestCase):
 
         self.assertEqual(str(uri), "sip:alice@atlanta.com;maddr=239.255.255.1;ttl=15")
 
-    def test_full(self):
+    def test_full(self) -> None:
         uri = URI.parse("sip:alice:secret@atlanta.com:5060;maddr=239.255.255.1;ttl=15")
 
         self.assertEqual(uri.host, "atlanta.com")

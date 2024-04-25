@@ -4,7 +4,6 @@
 #
 
 import dataclasses
-import typing
 import urllib.parse
 
 from .parameters import Parameters
@@ -14,13 +13,13 @@ from .parameters import Parameters
 class URI:
     scheme: str
     host: str
-    user: typing.Optional[str] = None
-    password: typing.Optional[str] = None
-    port: typing.Optional[int] = None
+    user: str | None = None
+    password: str | None = None
+    port: int | None = None
     parameters: Parameters = dataclasses.field(default_factory=Parameters)
 
     @classmethod
-    def parse(cls, value):
+    def parse(cls, value: str) -> "URI":
         parsed = urllib.parse.urlparse(value)
         if "@" in parsed.path:
             user_password, host_port = parsed.path.split("@")
@@ -34,8 +33,8 @@ class URI:
             user = None
             password = None
         if ":" in host_port:
-            host, port = host_port.split(":")
-            port = int(port)
+            host, port_ = host_port.split(":")
+            port = int(port_)
         else:
             host = host_port
             port = None
@@ -48,7 +47,7 @@ class URI:
             parameters=Parameters.parse(parsed.params),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = self.scheme + ":"
         if self.user is not None:
             s += self.user

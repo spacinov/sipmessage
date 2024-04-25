@@ -4,9 +4,9 @@
 #
 
 
-class Parameters(dict):
+class Parameters(dict[str, str | None]):
     @classmethod
-    def parse(cls, val):
+    def parse(cls, val: str) -> "Parameters":
         p = cls()
         if val:
             for bit in val.split(";"):
@@ -17,5 +17,5 @@ class Parameters(dict):
                 p[k] = v
         return p
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ";".join([k if v is None else (k + "=" + v) for k, v in self.items()])
