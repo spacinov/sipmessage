@@ -9,7 +9,10 @@ setup-test:
 
 .PHONY: setup-test
 
-lint: lint-ruff lint-pkg
+lint: lint-format lint-ruff
+
+lint-format:
+	ruff format --diff $(PYTHON_DIRS) setup.py
 
 lint-pkg:
 	check-manifest
@@ -17,9 +20,8 @@ lint-pkg:
 
 lint-ruff:
 	ruff check --diff $(PYTHON_DIRS) setup.py
-	ruff format --diff $(PYTHON_DIRS) setup.py
 
-.PHONY: lint lint-pkg lint-ruff
+.PHONY: lint lint-format lint-pkg lint-ruff
 
 test: test-types test-unittest
 
