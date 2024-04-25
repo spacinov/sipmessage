@@ -6,6 +6,7 @@
 
 # Test artifacts
 .coverage*
+coverage.xml
 htmlcov/
 tests.log
 

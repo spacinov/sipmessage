@@ -37,4 +37,10 @@ htmlcov: htmlcov/index.html
 htmlcov/index.html: .coverage
 	coverage html
 
-.PHONY: htmlcov test test-types test-unittest
+xmlcov: coverage.xml
+
+coverage.xml: .coverage
+	coverage xml
+
+.PHONY: htmlcov xmlcov
+.PHONY: test test-types test-unittest
