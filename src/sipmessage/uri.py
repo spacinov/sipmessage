@@ -47,6 +47,24 @@ class URI:
             parameters=Parameters.parse(parsed.params),
         )
 
+    @property
+    def global_phone_number(self) -> str | None:
+        """
+        The global phone number (E.164) of this URI, if described by the URI.
+
+        This is one of the possibilities for the `userinfo` part described in RFC3261,
+        with telephone-subscriber in RFC2806:
+
+        > userinfo = user | telephone-subscriber
+        > telephone-subscriber = global-phone-number | local-phone-number
+        """
+        if self.user is None:
+            return None
+        if self.user[0] == "+" and self.user[1:].isnumeric():
+            return self.user
+        else:
+            return None
+
     def __str__(self) -> str:
         s = self.scheme + ":"
         if self.user is not None:
