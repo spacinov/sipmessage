@@ -1,0 +1,82 @@
+#
+# Copyright (C) Spacinov SAS
+# Distributed under the 2-clause BSD license
+#
+
+import unittest
+
+from sipmessage.uri import URI
+
+
+class URITest(unittest.TestCase):
+    def test_host(self):
+        uri = URI.parse("sip:atlanta.com")
+
+        self.assertEqual(uri.host, "atlanta.com")
+        self.assertEqual(uri.port, None)
+        self.assertEqual(uri.user, None)
+        self.assertEqual(uri.password, None)
+        self.assertEqual(uri.parameters, {})
+
+        self.assertEqual(str(uri), "sip:atlanta.com")
+
+    def test_host_and_parameter_without_value(self):
+        uri = URI.parse("sip:1.2.3.4;lr")
+
+        self.assertEqual(uri.host, "1.2.3.4")
+        self.assertEqual(uri.port, None)
+        self.assertEqual(uri.user, None)
+        self.assertEqual(uri.password, None)
+        self.assertEqual(
+            uri.parameters,
+            {"lr": None},
+        )
+
+        self.assertEqual(str(uri), "sip:1.2.3.4;lr")
+
+    def test_user_and_host(self):
+        uri = URI.parse("sip:alice@atlanta.com")
+
+        self.assertEqual(uri.host, "atlanta.com")
+        self.assertEqual(uri.port, None)
+        self.assertEqual(uri.user, "alice")
+        self.assertEqual(uri.password, None)
+        self.assertEqual(uri.parameters, {})
+
+        self.assertEqual(str(uri), "sip:alice@atlanta.com")
+
+    def test_user_and_host_and_parameters(self):
+        uri = URI.parse("sip:alice@atlanta.com;maddr=239.255.255.1;ttl=15")
+
+        self.assertEqual(uri.host, "atlanta.com")
+        self.assertEqual(uri.port, None)
+        self.assertEqual(uri.user, "alice")
+        self.assertEqual(uri.password, None)
+        self.assertEqual(
+            uri.parameters,
+            {
+                "maddr": "239.255.255.1",
+                "ttl": "15",
+            },
+        )
+
+        self.assertEqual(str(uri), "sip:alice@atlanta.com;maddr=239.255.255.1;ttl=15")
+
+    def test_full(self):
+        uri = URI.parse("sip:alice:secret@atlanta.com:5060;maddr=239.255.255.1;ttl=15")
+
+        self.assertEqual(uri.host, "atlanta.com")
+        self.assertEqual(uri.port, 5060)
+        self.assertEqual(uri.user, "alice")
+        self.assertEqual(uri.password, "secret")
+        self.assertEqual(
+            uri.parameters,
+            {
+                "maddr": "239.255.255.1",
+                "ttl": "15",
+            },
+        )
+
+        self.assertEqual(
+            str(uri), "sip:alice:secret@atlanta.com:5060;maddr=239.255.255.1;ttl=15"
+        )
