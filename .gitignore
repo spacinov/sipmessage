@@ -3,6 +3,7 @@
 *.mo
 *.pyc
 .mypy_cache
+.*-done
 
 # Test artifacts
 .coverage*

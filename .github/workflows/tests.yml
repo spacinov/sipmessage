@@ -12,11 +12,11 @@ jobs:
         with:
           python-version: 3.9
       - name: Install packages
-        run: pip install .[dev]
+        run: make setup-test
       - name: Run linters
-        run: make lint
+        run: make ci-lint
 
-  test:
+  test-py39:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +24,18 @@ jobs:
         with:
           python-version: 3.9
       - name: Install packages
-        run: pip install .[dev]
+        run: make setup-test
       - name: Run tests
-        run: make test
+        run: make ci-test
+
+  test-py312:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install packages
+        run: make setup-test
+      - name: Run tests
+        run: make ci-test
