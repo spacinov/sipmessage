@@ -5,7 +5,7 @@
 
 import unittest
 
-from sipmessage.uri import URI
+from sipmessage import URI
 
 
 class URITest(unittest.TestCase):
