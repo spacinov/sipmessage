@@ -11,7 +11,7 @@ version = "0.1.0"
 dependencies = []
 requires-python = ">= 3.10"
 
-# Developmeent
+# Development
 authors = [
     {name = "Spacinov Engineering", email="opensource@spacinov.com"},
 ]
@@ -19,7 +19,7 @@ license = {text = "BSD License"}
 
 # Description
 description = "Pure python parsing of SIP messages and headers"
-readme = {file = "README.rst", content-type = "x-rst"}
+readme = {file = "README.rst", content-type = "text/x-rst"}
 
 # PyPI
 classifiers = [
