@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # Version
 name = "sipmessage"
-version = "0.1.0"
+version = "0.1.1"
 
 # Dependencies
 dependencies = []
