@@ -15,10 +15,7 @@ for parsing SIP messages.
 API Reference
 -------------
 
-.. automodule:: sipmessage.uri
-   :members:
-
-.. automodule:: sipmessage.parameters
+.. automodule:: sipmessage
    :members:
 
 .. toctree::

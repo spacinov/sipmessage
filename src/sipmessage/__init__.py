@@ -5,4 +5,8 @@
 
 import importlib.metadata
 
+from .parameters import Parameters
+from .uri import URI
+
+__all__ = ["Parameters", "URI"]
 __version__ = importlib.metadata.version("sipmessage")

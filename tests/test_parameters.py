@@ -5,7 +5,7 @@
 
 import unittest
 
-from sipmessage.parameters import Parameters
+from sipmessage import Parameters
 
 
 class ParametersTest(unittest.TestCase):
