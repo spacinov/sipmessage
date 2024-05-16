@@ -9,6 +9,14 @@ sipmessage
    :target: https://pypi.python.org/pypi/sipmessage
    :alt: Version
 
+.. image:: https://github.com/spacinov/sipmessage/workflows/tests/badge.svg
+   :target: https://github.com/spacinov/sipmessage/actions
+   :alt: Tests
+
+.. image:: https://img.shields.io/codecov/c/github/spacinov/sipmessage.svg
+   :target: https://codecov.io/gh/spacinov/sipmessage
+   :alt: Coverage
+
 The ``sipmessage`` project provides a set of Python helpers and structures
 for parsing SIP messages.
 
