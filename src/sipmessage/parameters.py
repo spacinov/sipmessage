@@ -5,8 +5,15 @@
 
 
 class Parameters(dict[str, str | None]):
+    """
+    A dictionary describing URI parameters.
+    """
+
     @classmethod
     def parse(cls, val: str) -> "Parameters":
+        """
+        Parse the given string into a :class:`Parameters` instance.
+        """
         p = cls()
         if val:
             for bit in val.split(";"):
