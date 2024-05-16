@@ -6,7 +6,7 @@
 
 class Parameters(dict[str, str | None]):
     """
-    A dictionary describing URI parameters.
+    A dictionary of :class:`Address` or :class:`URI` parameters.
     """
 
     @classmethod
