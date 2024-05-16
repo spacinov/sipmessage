@@ -11,15 +11,33 @@ from .parameters import Parameters
 
 @dataclasses.dataclass
 class URI:
+    """
+    A SIP or SIPS URL as described by RFC3261.
+    """
+
     scheme: str
+    "The URL scheme specifier."
+
     host: str
+    "The host providing the SIP resource."
+
     user: str | None = None
+    "The identifier of a particular resource at the host being addressed."
+
     password: str | None = None
+    "A password associated with the user."
+
     port: int | None = None
+    "The port number where the request is to be sent."
+
     parameters: Parameters = dataclasses.field(default_factory=Parameters)
+    "Parameters affecting a request constructed from the URI."
 
     @classmethod
     def parse(cls, value: str) -> "URI":
+        """
+        Parse the given string into a :class:`URI` instance.
+        """
         parsed = urllib.parse.urlparse(value)
         if "@" in parsed.path:
             user_password, host_port = parsed.path.split("@")

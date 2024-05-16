@@ -12,5 +12,14 @@ sipmessage
 The ``sipmessage`` project provides a set of Python helpers and structures
 for parsing SIP messages.
 
+API Reference
+-------------
+
+.. automodule:: sipmessage.uri
+   :members:
+
+.. automodule:: sipmessage.parameters
+   :members:
+
 .. toctree::
    :maxdepth: 2
