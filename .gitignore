@@ -14,8 +14,10 @@ tests.log
 # Editor / IDE files
 .vscode
 .*.swp
+env/
 tags
 
 # Packaging
 build/
 dist/
+docs/_build/
