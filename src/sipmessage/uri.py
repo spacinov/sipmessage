@@ -37,8 +37,15 @@ class URI:
     def parse(cls, value: str) -> "URI":
         """
         Parse the given string into a :class:`URI` instance.
+
+        If parsing fails, a :class:`ValueError` is raised.
         """
         parsed = urllib.parse.urlparse(value)
+
+        # Check the URI scheme is valid.
+        if parsed.scheme not in ("sip", "sips"):
+            raise ValueError("URI scheme must be 'sip' or 'sips'")
+
         if "@" in parsed.path:
             user_password, host_port = parsed.path.split("@")
             if ":" in user_password:
@@ -52,7 +59,10 @@ class URI:
             password = None
         if ":" in host_port:
             host, port_ = host_port.split(":")
-            port = int(port_)
+            try:
+                port = int(port_)
+            except ValueError:
+                raise ValueError("URI port must be an integer")
         else:
             host = host_port
             port = None

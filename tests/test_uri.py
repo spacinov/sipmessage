@@ -9,6 +9,28 @@ from sipmessage import URI
 
 
 class URITest(unittest.TestCase):
+    def test_invalid_port(self) -> None:
+        # No port.
+        with self.assertRaises(ValueError) as cm:
+            URI.parse("sip:atlanta.com:")
+        self.assertEqual(str(cm.exception), "URI port must be an integer")
+
+        # Invalid port.
+        with self.assertRaises(ValueError) as cm:
+            URI.parse("sip:atlanta.com:bob")
+        self.assertEqual(str(cm.exception), "URI port must be an integer")
+
+    def test_invalid_scheme(self) -> None:
+        # No scheme.
+        with self.assertRaises(ValueError) as cm:
+            URI.parse("atlanta.com")
+        self.assertEqual(str(cm.exception), "URI scheme must be 'sip' or 'sips'")
+
+        # Invalid scheme.
+        with self.assertRaises(ValueError) as cm:
+            URI.parse("bogus:atlanta.com")
+        self.assertEqual(str(cm.exception), "URI scheme must be 'sip' or 'sips'")
+
     def test_host(self) -> None:
         uri = URI.parse("sip:atlanta.com")
 
