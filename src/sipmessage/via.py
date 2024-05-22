@@ -28,6 +28,8 @@ class Via:
     def parse(cls, value: str) -> "Via":
         """
         Parse the given string into a :class:`Via` instance.
+
+        If parsing fails, a :class:`ValueError` is raised.
         """
         m = re.match(r"SIP/2\.0/([A-Z]+) (.+)", value)
         if m is None:

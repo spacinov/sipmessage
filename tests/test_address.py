@@ -14,6 +14,11 @@ class AddressTest(unittest.TestCase):
             Address.parse("")
         self.assertEqual(str(cm.exception), "Not a valid address")
 
+    def test_invalid_uri(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Address.parse("atlanta.com")
+        self.assertEqual(str(cm.exception), "URI scheme must be 'sip' or 'sips'")
+
     def test_no_brackets(self) -> None:
         contact = Address.parse("sip:+12125551212@phone2net.com;tag=887s")
         self.assertEqual(contact.name, "")

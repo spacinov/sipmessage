@@ -63,6 +63,8 @@ class Address:
     def parse(cls, value: str) -> "Address":
         """
         Parse the given string into an :class:`Address` instance.
+
+        If parsing fails, a :class:`ValueError` is raised.
         """
         for pattern in ADDRESS_PATTERNS:
             m = pattern.match(value)
