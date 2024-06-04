@@ -26,23 +26,44 @@ class AddressTest(unittest.TestCase):
         self.assertEqual(contact.parameters, {"tag": "887s"})
         self.assertEqual(str(contact), "<sip:+12125551212@phone2net.com>;tag=887s")
 
-    def test_no_quotes(self) -> None:
-        contact = Address.parse("Anonymous <sip:c8oqz84zk7z@privacy.org>;tag=hyh8")
-        self.assertEqual(contact.name, "Anonymous")
+    def test_display_name_no_quotes(self) -> None:
+        contact = Address.parse(
+            "Anonymous  User\t! <sip:c8oqz84zk7z@privacy.org>;tag=hyh8"
+        )
+        self.assertEqual(contact.name, "Anonymous User !")
         self.assertEqual(str(contact.uri), "sip:c8oqz84zk7z@privacy.org")
         self.assertEqual(contact.parameters, {"tag": "hyh8"})
         self.assertEqual(
-            str(contact), '"Anonymous" <sip:c8oqz84zk7z@privacy.org>;tag=hyh8'
+            str(contact), '"Anonymous User !" <sip:c8oqz84zk7z@privacy.org>;tag=hyh8'
+        )
+
+    def test_display_name_with_quotes(self) -> None:
+        contact = Address.parse('"Bob" <sips:bob@biloxi.com> ;tag=a48s')
+        self.assertEqual(contact.name, "Bob")
+        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
+        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
+
+    def test_display_name_with_quotes_no_space(self) -> None:
+        contact = Address.parse('"Bob"<sips:bob@biloxi.com>;tag=a48s')
+        self.assertEqual(contact.name, "Bob")
+        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
+        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
+
+    def test_display_name_with_quotes_escape(self) -> None:
+        contact = Address.parse(
+            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" <sips:bob@biloxi.com> ;tag=a48s'
+        )
+        self.assertEqual(contact.name, 'Bob "foo" \\backslashes \\\\ <bar>')
+        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
+        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(
+            str(contact),
+            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" <sips:bob@biloxi.com>;tag=a48s',
         )
 
     def test_with_parameter_without_value(self) -> None:
         contact = Address.parse("<sip:1.2.3.4;lr>")
         self.assertEqual(contact.name, "")
         self.assertEqual(str(contact.uri), "sip:1.2.3.4;lr")
-
-    def test_with_quotes(self) -> None:
-        contact = Address.parse('"Bob" <sips:bob@biloxi.com> ;tag=a48s')
-        self.assertEqual(contact.name, "Bob")
-        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
-        self.assertEqual(contact.parameters, {"tag": "a48s"})
-        self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
