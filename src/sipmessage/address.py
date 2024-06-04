@@ -6,42 +6,35 @@
 import dataclasses
 import re
 
+import abnf
+
 from .parameters import Parameters
+from .rfc3261 import Rule
 from .uri import URI
 
-ADDRESS_PATTERNS = [
-    # name-addr *(SEMI contact-params)
-    re.compile(
-        # token
-        r"^(?P<name>[a-zA-Z0-9\-\._\+~]*)"
-        # LWS
-        "[ \t]*"
-        # LAQUOT addr-spec RAQUOT
-        "<(?P<uri>[^>]+)>"
-        "[ \t]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
-    ),
-    # name-addr *(SEMI contact-params)
-    re.compile(
-        # quoted-string
-        '^(?:"(?P<name>[^"]+)")'
-        # LWS
-        "[ \t]*"
-        # LAQUOT addr-spec RAQUOT
-        "<(?P<uri>[^>]+)>"
-        "[ \t]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
-    ),
-    # addr-spec *(SEMI contact-params)
-    re.compile(
-        # no name
-        "^(?P<name>)"
-        # addr-spec
-        "(?P<uri>[^ \t;]+)"
-        "[ \t]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
-    ),
-]
+
+def get_parts(value: str) -> tuple[str, str, str]:
+    uri = ""
+    name = ""
+    parameters: list[str] = []
+
+    queue = [rule.parse_all(value)]
+    while queue:
+        n, queue = queue[0], queue[1:]
+        if n.name == "addr-spec":
+            uri = n.value
+        elif n.name == "display-name":
+            name = n.value.strip()
+            if name.startswith('"'):
+                name = name[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+        elif n.name == "contact-params":
+            parameters.append(n.value)
+        else:
+            queue.extend(n.children)
+    return uri, name, ";".join(parameters)
+
+
+rule = Rule("contact-param")
 
 
 @dataclasses.dataclass
@@ -66,21 +59,25 @@ class Address:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-        for pattern in ADDRESS_PATTERNS:
-            m = pattern.match(value)
-            if m:
-                return cls(
-                    uri=URI.parse(m.group("uri")),
-                    name=m.group("name"),
-                    parameters=Parameters.parse(m.group("parameters")),
-                )
-        else:
+
+        # All linear white space, including folding, has the same semantics as SP.
+        value = re.sub(r"\s+", " ", value)
+
+        try:
+            uri, name, parameters = get_parts(value)
+        except abnf.ParseError:
             raise ValueError("Not a valid address")
+
+        return cls(
+            uri=URI.parse(uri),
+            name=name,
+            parameters=Parameters.parse(parameters),
+        )
 
     def __str__(self) -> str:
         s = ""
         if self.name:
-            s += '"%s" ' % self.name
+            s += '"%s" ' % self.name.replace("\\", "\\\\").replace('"', '\\"')
         s += "<%s>" % self.uri
         if self.parameters:
             s += ";" + str(self.parameters)
