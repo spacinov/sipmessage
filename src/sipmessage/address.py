@@ -9,27 +9,19 @@ import re
 from .parameters import Parameters
 from .uri import URI
 
+TOKEN_LWS = r"[a-zA-Z0-9\-.!%*_+`'~ ]*"
+QUOTED_STRING = '"(?:[^"]|\\")*"'
+
 ADDRESS_PATTERNS = [
     # name-addr *(SEMI contact-params)
     re.compile(
-        # token
-        r"^(?P<name>[a-zA-Z0-9\-\._\+~]*)"
-        # LWS
-        "[ \t]*"
+        # display-name
+        "^(?P<name>" + TOKEN_LWS + "|" + QUOTED_STRING + ")"
         # LAQUOT addr-spec RAQUOT
+        "[ ]*"
         "<(?P<uri>[^>]+)>"
-        "[ \t]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
-    ),
-    # name-addr *(SEMI contact-params)
-    re.compile(
-        # quoted-string
-        '^(?:"(?P<name>[^"]+)")'
-        # LWS
-        "[ \t]*"
-        # LAQUOT addr-spec RAQUOT
-        "<(?P<uri>[^>]+)>"
-        "[ \t]*"
+        # *(SEMI contact-params)
+        "[ ]*"
         r"(?:;(?P<parameters>[^\?]*))?"
     ),
     # addr-spec *(SEMI contact-params)
@@ -37,11 +29,23 @@ ADDRESS_PATTERNS = [
         # no name
         "^(?P<name>)"
         # addr-spec
-        "(?P<uri>[^ \t;]+)"
-        "[ \t]*"
+        "(?P<uri>[^ ;]+)"
+        # *(SEMI contact-params)
+        "[ ]*"
         r"(?:;(?P<parameters>[^\?]*))?"
     ),
 ]
+
+
+def quote(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def unquote(value: str) -> str:
+    if value.startswith('"'):
+        return value[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+    else:
+        return value
 
 
 @dataclasses.dataclass
@@ -66,12 +70,16 @@ class Address:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
+
+        # All linear white space, including folding, has the same semantics as SP.
+        value = re.sub(r"\s+", " ", value).strip()
+
         for pattern in ADDRESS_PATTERNS:
             m = pattern.match(value)
             if m:
                 return cls(
                     uri=URI.parse(m.group("uri")),
-                    name=m.group("name"),
+                    name=unquote(m.group("name").strip()),
                     parameters=Parameters.parse(m.group("parameters")),
                 )
         else:
@@ -80,7 +88,7 @@ class Address:
     def __str__(self) -> str:
         s = ""
         if self.name:
-            s += '"%s" ' % self.name
+            s += quote(self.name) + " "
         s += "<%s>" % self.uri
         if self.parameters:
             s += ";" + str(self.parameters)
