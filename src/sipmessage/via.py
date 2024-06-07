@@ -6,7 +6,15 @@
 import dataclasses
 import re
 
+from . import grammar
 from .parameters import Parameters
+
+VIA_PATTERN = re.compile(
+    f"^SIP{grammar.SLASH}2\\.0{grammar.SLASH}(?P<transport>{grammar.TOKEN}) "
+    f"(?P<address>{grammar.HOST}(?::{grammar.PORT})?)"
+    f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
+    "$"
+)
 
 
 @dataclasses.dataclass
@@ -31,16 +39,17 @@ class Via:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-        m = re.match(r"SIP/2\.0/([A-Z]+) (.+)", value)
-        if m is None:
-            raise ValueError("Malformed Via header")
 
-        transport = m.group(1)
-        address, _, rest = m.group(2).partition(";")
+        value = grammar.simplify_whitespace(value)
+
+        m = VIA_PATTERN.match(value)
+        if m is None:
+            raise ValueError("Via is not valid")
+
         return cls(
-            transport=transport,
-            address=address,
-            parameters=Parameters.parse(rest),
+            transport=m.group("transport"),
+            address=m.group("address"),
+            parameters=Parameters.parse(m.group("parameters")),
         )
 
     def __str__(self) -> str:

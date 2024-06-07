@@ -3,7 +3,13 @@
 # Distributed under the 2-clause BSD license
 #
 
+import re
 from urllib.parse import quote, unquote
+
+from . import grammar
+
+EQUAL_PATTERN = re.compile(grammar.EQUAL)
+SEMI_PATTERN = re.compile(grammar.SEMI)
 
 
 class Parameters(dict[str, str | None]):
@@ -17,10 +23,10 @@ class Parameters(dict[str, str | None]):
         Parse the given string into a :class:`Parameters` instance.
         """
         p = cls()
-        if val:
-            for bit in val.split(";"):
+        for bit in SEMI_PATTERN.split(val):
+            if bit:
                 if "=" in bit:
-                    k, v = bit.split("=", 1)
+                    k, v = EQUAL_PATTERN.split(bit, 1)
                     v = unquote(v)
                 else:
                     k, v = bit, None

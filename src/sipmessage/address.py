@@ -21,8 +21,8 @@ ADDRESS_PATTERNS = [
         "[ ]*"
         "<(?P<uri>[^>]+)>"
         # *(SEMI contact-params)
-        "[ ]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
+        f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
+        "$"
     ),
     # addr-spec *(SEMI contact-params)
     re.compile(
@@ -31,8 +31,8 @@ ADDRESS_PATTERNS = [
         # addr-spec
         "(?P<uri>[^ ;]+)"
         # *(SEMI contact-params)
-        "[ ]*"
-        r"(?:;(?P<parameters>[^\?]*))?"
+        f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
+        "$"
     ),
 ]
 
@@ -71,8 +71,7 @@ class Address:
         If parsing fails, a :class:`ValueError` is raised.
         """
 
-        # All linear white space, including folding, has the same semantics as SP.
-        value = re.sub(r"\s+", " ", value).strip()
+        value = grammar.simplify_whitespace(value)
 
         for pattern in ADDRESS_PATTERNS:
             m = pattern.match(value)
@@ -83,7 +82,7 @@ class Address:
                     parameters=Parameters.parse(m.group("parameters")),
                 )
         else:
-            raise ValueError("Not a valid address")
+            raise ValueError("Address is not valid")
 
     def __str__(self) -> str:
         s = ""

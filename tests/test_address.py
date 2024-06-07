@@ -12,12 +12,12 @@ class AddressTest(unittest.TestCase):
     def test_empty(self) -> None:
         with self.assertRaises(ValueError) as cm:
             Address.parse("")
-        self.assertEqual(str(cm.exception), "Not a valid address")
+        self.assertEqual(str(cm.exception), "Address is not valid")
 
     def test_invalid_uri(self) -> None:
         with self.assertRaises(ValueError) as cm:
             Address.parse("atlanta.com")
-        self.assertEqual(str(cm.exception), "Invalid URI")
+        self.assertEqual(str(cm.exception), "URI is not valid")
 
     def test_no_brackets(self) -> None:
         contact = Address.parse("sip:+12125551212@phone2net.com;tag=887s")
@@ -121,7 +121,7 @@ class AddressTest(unittest.TestCase):
         )
         self.assertEqual(str(contact), "<sip:1.2.3.4;lr>")
 
-    def test_rfc4775_esc01_contact(self) -> None:
+    def test_rfc4475_esc01_contact(self) -> None:
         contact = Address.parse(
             "<sip:cal%6Cer@host5.example.net;%6C%72;n%61me=v%61lue%25%34%31>"
         )
@@ -141,7 +141,7 @@ class AddressTest(unittest.TestCase):
             "<sip:caller@host5.example.net;lr;name=value%2541>",
         )
 
-    def test_rfc4775_esc02_from(self) -> None:
+    def test_rfc4475_esc02_from(self) -> None:
         contact = Address.parse('"%Z%45" <sip:resource@example.com>;tag=f232jadfj23')
         self.assertEqual(
             contact,
