@@ -17,7 +17,7 @@ class AddressTest(unittest.TestCase):
     def test_invalid_uri(self) -> None:
         with self.assertRaises(ValueError) as cm:
             Address.parse("atlanta.com")
-        self.assertEqual(str(cm.exception), "URI scheme must be 'sip' or 'sips'")
+        self.assertEqual(str(cm.exception), "Invalid URI")
 
     def test_no_brackets(self) -> None:
         contact = Address.parse("sip:+12125551212@phone2net.com;tag=887s")
@@ -67,3 +67,20 @@ class AddressTest(unittest.TestCase):
         contact = Address.parse("<sip:1.2.3.4;lr>")
         self.assertEqual(contact.name, "")
         self.assertEqual(str(contact.uri), "sip:1.2.3.4;lr")
+
+    def test_rfc4475_wide_range_of_valid_characters(self) -> None:
+        contact = Address.parse(
+            '"BEL:\x07 NUL:\x00 DEL:\x7f" '
+            "<sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com>"
+        )
+        self.assertEqual(contact.name, "BEL:\x07 NUL:\x00 DEL:\x7f")
+        self.assertEqual(
+            str(contact.uri),
+            "sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com",
+        )
+        self.assertEqual(contact.parameters, {})
+        self.assertEqual(
+            str(contact),
+            '"BEL:\x07 NUL:\x00 DEL:\x7f" '
+            "<sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com>",
+        )

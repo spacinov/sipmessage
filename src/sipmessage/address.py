@@ -6,17 +6,17 @@
 import dataclasses
 import re
 
+from . import grammar
 from .parameters import Parameters
 from .uri import URI
 
-TOKEN_LWS = r"[a-zA-Z0-9\-.!%*_+`'~ ]*"
-QUOTED_STRING = '"(?:[^"]|\\")*"'
+TOKEN_LWS = grammar.cset(grammar.C_TOKEN + " ")
 
 ADDRESS_PATTERNS = [
     # name-addr *(SEMI contact-params)
     re.compile(
         # display-name
-        "^(?P<name>" + TOKEN_LWS + "|" + QUOTED_STRING + ")"
+        f"^(?P<name>{TOKEN_LWS}*|{grammar.QUOTED_STRING})"
         # LAQUOT addr-spec RAQUOT
         "[ ]*"
         "<(?P<uri>[^>]+)>"
