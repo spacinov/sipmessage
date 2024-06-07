@@ -23,7 +23,7 @@ class ViaTest(unittest.TestCase):
             via,
             Via(
                 transport="WSS",
-                address="T8trJdbBz7r6.invalid",
+                host="T8trJdbBz7r6.invalid",
                 parameters=Parameters(
                     branch="z9hG4bKYJHC9fb",
                     received="80.200.136.90",
@@ -46,7 +46,8 @@ class ViaTest(unittest.TestCase):
             via,
             Via(
                 transport="WSS",
-                address="T8trJdbBz7r6.invalid:5060",
+                host="T8trJdbBz7r6.invalid",
+                port=5060,
                 parameters=Parameters(
                     branch="z9hG4bKYJHC9fb",
                     received="80.200.136.90",
@@ -69,7 +70,7 @@ class ViaTest(unittest.TestCase):
             via,
             Via(
                 transport="WSS",
-                address="1.2.3.4",
+                host="1.2.3.4",
                 parameters=Parameters(
                     branch="z9hG4bKYJHC9fb",
                     received="80.200.136.90",
@@ -89,7 +90,7 @@ class ViaTest(unittest.TestCase):
             via,
             Via(
                 transport="TCP",
-                address="host1.example.com",
+                host="host1.example.com",
                 parameters=Parameters(branch="z9hG4bK-.!f*_+`'~"),
             ),
         )
@@ -106,7 +107,7 @@ class ViaTest(unittest.TestCase):
             via,
             Via(
                 transport="UDP",
-                address="192.168.255.111",
+                host="192.168.255.111",
                 parameters=Parameters(branch="z9hG4bK30239"),
             ),
         )
