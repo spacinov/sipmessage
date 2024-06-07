@@ -6,12 +6,13 @@
 import dataclasses
 import re
 
-from . import grammar
+from . import grammar, utils
 from .parameters import Parameters
 from .uri import URI
 
 TOKEN_LWS = grammar.cset(grammar.C_TOKEN + " ")
 
+ADDRESS_EXCEPTION = ValueError("Address is not valid")
 ADDRESS_PATTERNS = [
     # name-addr *(SEMI contact-params)
     re.compile(
@@ -22,7 +23,6 @@ ADDRESS_PATTERNS = [
         "<(?P<uri>[^>]+)>"
         # *(SEMI contact-params)
         f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
-        "$"
     ),
     # addr-spec *(SEMI contact-params)
     re.compile(
@@ -32,7 +32,6 @@ ADDRESS_PATTERNS = [
         "(?P<uri>[^ ;]+)"
         # *(SEMI contact-params)
         f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
-        "$"
     ),
 ]
 
@@ -70,18 +69,32 @@ class Address:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-        value = grammar.simplify_whitespace(value)
+        return utils.parse_single(cls._parse_one, ADDRESS_EXCEPTION, value)
 
+    @classmethod
+    def parse_many(cls, value: str) -> "list[Address]":
+        """
+        Parse the given string into a list of :class:`Address` instances.
+
+        If parsing fails, a :class:`ValueError` is raised.
+        """
+        return utils.parse_many(cls._parse_one, ADDRESS_EXCEPTION, value)
+
+    @classmethod
+    def _parse_one(cls, value: str) -> "tuple[Address, str]":
         for pattern in ADDRESS_PATTERNS:
             m = pattern.match(value)
             if m:
-                return cls(
-                    uri=URI.parse(m.group("uri")),
-                    name=unquote(m.group("name").strip()),
-                    parameters=Parameters.parse(m.group("parameters")),
+                return (
+                    cls(
+                        uri=URI.parse(m.group("uri")),
+                        name=unquote(m.group("name").strip()),
+                        parameters=Parameters.parse(m.group("parameters")),
+                    ),
+                    value[m.end() :],
                 )
         else:
-            raise ValueError("Address is not valid")
+            raise ADDRESS_EXCEPTION
 
     def __str__(self) -> str:
         s = ""

@@ -116,3 +116,41 @@ class ViaTest(unittest.TestCase):
                 parameters=Parameters(branch="z9hG4bK30239"),
             ),
         )
+
+    def test_trailing_comma(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Via.parse("SIP/2.0/UDP 192.0.2.15,")
+        self.assertEqual(str(cm.exception), "Via is not valid")
+
+
+class ViaParseManyTest(unittest.TestCase):
+    def test_simple(self) -> None:
+        vias = Via.parse_many(
+            "SIP/2.0/UDP 192.168.255.111;branch=z9hG4bK30239, "
+            "SIP/2.0/WSS T8trJdbBz7r6.invalid;branch=z9hG4bKYJHC9fb"
+        )
+        self.assertEqual(
+            vias,
+            [
+                Via(
+                    transport="UDP",
+                    host="192.168.255.111",
+                    parameters=Parameters(branch="z9hG4bK30239"),
+                ),
+                Via(
+                    transport="WSS",
+                    host="T8trJdbBz7r6.invalid",
+                    parameters=Parameters(branch="z9hG4bKYJHC9fb"),
+                ),
+            ],
+        )
+
+    def test_trailing_garbage(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Via.parse_many("SIP/2.0/UDP 192.0.2.15$")
+        self.assertEqual(str(cm.exception), "Via is not valid")
+
+    def test_trailing_comma(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Via.parse_many("SIP/2.0/UDP 192.0.2.15,")
+        self.assertEqual(str(cm.exception), "Via is not valid")

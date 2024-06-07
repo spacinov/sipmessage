@@ -200,3 +200,33 @@ class AddressTest(unittest.TestCase):
             '"BEL:\x07 NUL:\x00 DEL:\x7f" '
             "<sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com>",
         )
+
+    def test_trailing_comma(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Address.parse("<sip:1.2.3.4;lr>,")
+        self.assertEqual(str(cm.exception), "Address is not valid")
+
+
+class AddressParseManyTest(unittest.TestCase):
+    def test_simple(self) -> None:
+        contacts = Address.parse_many(
+            "<sip:alice@atlanta.com>, <sip:bob@biloxi.com>, <sip:carol@chicago.com>"
+        )
+        self.assertEqual(
+            contacts,
+            [
+                Address(uri=URI(scheme="sip", host="atlanta.com", user="alice")),
+                Address(uri=URI(scheme="sip", host="biloxi.com", user="bob")),
+                Address(uri=URI(scheme="sip", host="chicago.com", user="carol")),
+            ],
+        )
+
+    def test_trailing_garbage(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Address.parse_many("<sip:1.2.3.4;lr>$")
+        self.assertEqual(str(cm.exception), "Address is not valid")
+
+    def test_trailing_comma(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Address.parse_many("<sip:1.2.3.4;lr>,")
+        self.assertEqual(str(cm.exception), "Address is not valid")
