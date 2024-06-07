@@ -99,7 +99,7 @@ class URI:
             s += "@"
         s += self.host
         if self.port is not None:
-            s += ":" + str(self.port)
+            s += f":{self.port}"
         if self.parameters:
             s += ";" + str(self.parameters)
         return s
