@@ -3,6 +3,7 @@
 # Distributed under the 2-clause BSD license
 #
 
+import re
 import string
 
 
@@ -12,6 +13,16 @@ def cset(chars: str) -> str:
     character set.
     """
     return "[" + chars.replace("-", "\\-").replace("[", "\\[").replace("]", "\\]") + "]"
+
+
+def simplify_whitespace(value: str) -> str:
+    """
+    Replace any whitespace by a single space.
+
+    According to RFC 3261, all linear white space, including folding,
+    has the same semantics as SP.
+    """
+    return re.sub(r"\s+", " ", value).strip()
 
 
 # Character collections.
@@ -29,7 +40,12 @@ ALPHA = cset(C_ALPHA)
 ALPHANUM = cset(C_ALPHANUM)
 HEXDIG = cset(string.hexdigits)
 ESCAPED = f"%{HEXDIG}{{2}}"
+TOKEN = f"{cset(C_TOKEN)}+"
 QUOTED_STRING = '"(?:[^"]|\\")*"'
+
+EQUAL = "[ ]*=[ ]*"
+SEMI = "[ ]*;[ ]*"
+SLASH = "[ ]*/[ ]*"
 
 HEXSEQ = f"{HEXDIG}{{1,4}}(?::{HEXDIG}{{1,4}})*"
 HEXPART = f"(?:{HEXSEQ}|{HEXSEQ}::(?:{HEXSEQ})?|::(?:{HEXSEQ})?)"
@@ -47,4 +63,7 @@ PASSWORD = f"(?:{cset(C_PASSWORD_SAFE)}|{ESCAPED})+"
 PORT = "\\d+"
 
 URI_PARAMCHAR = f"(?:{cset(C_URI_PARAM_SAFE)}|{ESCAPED})"
-URI_GENERIC_PARAM = f"{URI_PARAMCHAR}+(?:={URI_PARAMCHAR}+)?"
+URI_PARAM = f"{URI_PARAMCHAR}+(?:={URI_PARAMCHAR}+)?"
+
+GENERIC_VALUE = f"(?:{TOKEN}|{HOST}|{QUOTED_STRING})"
+GENERIC_PARAM = f"{TOKEN}(?:{EQUAL}{GENERIC_VALUE})?"

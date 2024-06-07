@@ -16,7 +16,7 @@ URI_PATTERN = re.compile(
     f"(?:(?P<user>{grammar.USER})(?::(?P<password>{grammar.PASSWORD}))?@)?"
     f"(?P<host>{grammar.HOST})"
     f"(?::(?P<port>{grammar.PORT}))?"
-    f"(?P<parameters>(?:;{grammar.URI_GENERIC_PARAM})*)"
+    f"(?P<parameters>(?:;{grammar.URI_PARAM})*)"
     "$"
 )
 
@@ -54,7 +54,7 @@ class URI:
         """
         m = URI_PATTERN.match(value)
         if not m:
-            raise ValueError("Invalid URI")
+            raise ValueError("URI is not valid")
 
         port = m.group("port")
         user = m.group("user")
@@ -67,7 +67,7 @@ class URI:
             port=int(port) if port else None,
             user=urllib.parse.unquote(user) if user else None,
             password=urllib.parse.unquote(password) if password else None,
-            parameters=Parameters.parse(parameters[1:]),
+            parameters=Parameters.parse(parameters),
         )
 
     @property

@@ -13,23 +13,23 @@ class URITest(unittest.TestCase):
         # No port.
         with self.assertRaises(ValueError) as cm:
             URI.parse("sip:atlanta.com:")
-        self.assertEqual(str(cm.exception), "Invalid URI")
+        self.assertEqual(str(cm.exception), "URI is not valid")
 
         # Invalid port.
         with self.assertRaises(ValueError) as cm:
             URI.parse("sip:atlanta.com:bob")
-        self.assertEqual(str(cm.exception), "Invalid URI")
+        self.assertEqual(str(cm.exception), "URI is not valid")
 
     def test_invalid_scheme(self) -> None:
         # No scheme.
         with self.assertRaises(ValueError) as cm:
             URI.parse("atlanta.com")
-        self.assertEqual(str(cm.exception), "Invalid URI")
+        self.assertEqual(str(cm.exception), "URI is not valid")
 
         # Invalid scheme.
         with self.assertRaises(ValueError) as cm:
             URI.parse("bogus:atlanta.com")
-        self.assertEqual(str(cm.exception), "Invalid URI")
+        self.assertEqual(str(cm.exception), "URI is not valid")
 
     def test_host(self) -> None:
         uri = URI.parse("sip:atlanta.com")

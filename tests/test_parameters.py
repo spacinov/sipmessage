@@ -10,9 +10,10 @@ from sipmessage import Parameters
 
 class ParametersTest(unittest.TestCase):
     def test_empty(self) -> None:
-        parameters = Parameters.parse("")
-        self.assertEqual(parameters, {})
-        self.assertEqual(str(parameters), "")
+        for s in ["", ";;;", " ; ; ;"]:
+            parameters = Parameters.parse(s)
+            self.assertEqual(parameters, {})
+            self.assertEqual(str(parameters), "")
 
     def test_escaped(self) -> None:
         parameters = Parameters.parse("%6C%72;n%61me=v%61lue%25%34%31")
@@ -21,5 +22,10 @@ class ParametersTest(unittest.TestCase):
 
     def test_simple(self) -> None:
         parameters = Parameters.parse("foo=1;bar")
+        self.assertEqual(parameters, {"foo": "1", "bar": None})
+        self.assertEqual(str(parameters), "foo=1;bar")
+
+    def test_spaces(self) -> None:
+        parameters = Parameters.parse("foo  =  1  ;  bar")
         self.assertEqual(parameters, {"foo": "1", "bar": None})
         self.assertEqual(str(parameters), "foo=1;bar")
