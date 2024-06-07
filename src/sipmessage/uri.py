@@ -4,9 +4,21 @@
 #
 
 import dataclasses
+import re
 import urllib.parse
 
+from . import grammar
 from .parameters import Parameters
+
+URI_PATTERN = re.compile(
+    "^"
+    "(?P<scheme>sip|sips):"
+    f"(?:(?P<user>{grammar.USER})(?::(?P<password>{grammar.PASSWORD}))?@)?"
+    f"(?P<host>{grammar.HOST})"
+    f"(?::(?P<port>{grammar.PORT}))?"
+    f"(?P<parameters>(?:;{grammar.URI_GENERIC_PARAM})*)"
+    "$"
+)
 
 
 @dataclasses.dataclass
@@ -40,39 +52,22 @@ class URI:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-        parsed = urllib.parse.urlparse(value)
+        m = URI_PATTERN.match(value)
+        if not m:
+            raise ValueError("Invalid URI")
 
-        # Check the URI scheme is valid.
-        if parsed.scheme not in ("sip", "sips"):
-            raise ValueError("URI scheme must be 'sip' or 'sips'")
+        port = m.group("port")
+        user = m.group("user")
+        password = m.group("password")
+        parameters = m.group("parameters")
 
-        if "@" in parsed.path:
-            user_password, host_port = parsed.path.split("@")
-            if ":" in user_password:
-                user, password = user_password.split(":")
-            else:
-                user = user_password
-                password = None
-        else:
-            host_port = parsed.path
-            user = None
-            password = None
-        if ":" in host_port:
-            host, port_ = host_port.split(":")
-            try:
-                port = int(port_)
-            except ValueError:
-                raise ValueError("URI port must be an integer")
-        else:
-            host = host_port
-            port = None
         return cls(
-            scheme=parsed.scheme,
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            parameters=Parameters.parse(parsed.params),
+            scheme=m.group("scheme"),
+            host=m.group("host"),
+            port=int(port) if port else None,
+            user=urllib.parse.unquote(user) if user else None,
+            password=urllib.parse.unquote(password) if password else None,
+            parameters=Parameters.parse(parameters[1:]),
         )
 
     @property
@@ -96,9 +91,11 @@ class URI:
     def __str__(self) -> str:
         s = self.scheme + ":"
         if self.user is not None:
-            s += self.user
+            s += urllib.parse.quote(self.user, safe=grammar.C_USER_SAFE)
             if self.password is not None:
-                s += ":" + self.password
+                s += ":" + urllib.parse.quote(
+                    self.password, safe=grammar.C_PASSWORD_SAFE
+                )
             s += "@"
         s += self.host
         if self.port is not None:
