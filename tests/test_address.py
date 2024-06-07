@@ -5,7 +5,7 @@
 
 import unittest
 
-from sipmessage import Address
+from sipmessage import URI, Address, Parameters
 
 
 class AddressTest(unittest.TestCase):
@@ -21,64 +21,175 @@ class AddressTest(unittest.TestCase):
 
     def test_no_brackets(self) -> None:
         contact = Address.parse("sip:+12125551212@phone2net.com;tag=887s")
-        self.assertEqual(contact.name, "")
-        self.assertEqual(str(contact.uri), "sip:+12125551212@phone2net.com")
-        self.assertEqual(contact.parameters, {"tag": "887s"})
+        self.assertEqual(
+            contact,
+            Address(
+                uri=URI(
+                    scheme="sip",
+                    user="+12125551212",
+                    host="phone2net.com",
+                ),
+                parameters=Parameters({"tag": "887s"}),
+            ),
+        )
         self.assertEqual(str(contact), "<sip:+12125551212@phone2net.com>;tag=887s")
 
     def test_display_name_no_quotes(self) -> None:
         contact = Address.parse(
             "Anonymous  User\t! <sip:c8oqz84zk7z@privacy.org>;tag=hyh8"
         )
-        self.assertEqual(contact.name, "Anonymous User !")
-        self.assertEqual(str(contact.uri), "sip:c8oqz84zk7z@privacy.org")
-        self.assertEqual(contact.parameters, {"tag": "hyh8"})
+        self.assertEqual(
+            contact,
+            Address(
+                name="Anonymous User !",
+                uri=URI(
+                    scheme="sip",
+                    user="c8oqz84zk7z",
+                    host="privacy.org",
+                ),
+                parameters=Parameters({"tag": "hyh8"}),
+            ),
+        )
         self.assertEqual(
             str(contact), '"Anonymous User !" <sip:c8oqz84zk7z@privacy.org>;tag=hyh8'
         )
 
     def test_display_name_with_quotes(self) -> None:
         contact = Address.parse('"Bob" <sips:bob@biloxi.com> ;tag=a48s')
-        self.assertEqual(contact.name, "Bob")
-        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
-        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(
+            contact,
+            Address(
+                name="Bob",
+                uri=URI(
+                    scheme="sips",
+                    user="bob",
+                    host="biloxi.com",
+                ),
+                parameters=Parameters({"tag": "a48s"}),
+            ),
+        )
         self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
 
     def test_display_name_with_quotes_no_space(self) -> None:
         contact = Address.parse('"Bob"<sips:bob@biloxi.com>;tag=a48s')
-        self.assertEqual(contact.name, "Bob")
-        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
-        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(
+            contact,
+            Address(
+                name="Bob",
+                uri=URI(
+                    scheme="sips",
+                    user="bob",
+                    host="biloxi.com",
+                ),
+                parameters=Parameters({"tag": "a48s"}),
+            ),
+        )
         self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
 
     def test_display_name_with_quotes_escape(self) -> None:
         contact = Address.parse(
-            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" <sips:bob@biloxi.com> ;tag=a48s'
+            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" '
+            "<sips:bob@biloxi.com> ;tag=a48s"
         )
-        self.assertEqual(contact.name, 'Bob "foo" \\backslashes \\\\ <bar>')
-        self.assertEqual(str(contact.uri), "sips:bob@biloxi.com")
-        self.assertEqual(contact.parameters, {"tag": "a48s"})
+        self.assertEqual(
+            contact,
+            Address(
+                name='Bob "foo" \\backslashes \\\\ <bar>',
+                uri=URI(
+                    scheme="sips",
+                    user="bob",
+                    host="biloxi.com",
+                ),
+                parameters=Parameters({"tag": "a48s"}),
+            ),
+        )
         self.assertEqual(
             str(contact),
-            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" <sips:bob@biloxi.com>;tag=a48s',
+            '"Bob \\"foo\\" \\\\backslashes \\\\\\\\ <bar>" '
+            "<sips:bob@biloxi.com>;tag=a48s",
         )
 
     def test_with_parameter_without_value(self) -> None:
         contact = Address.parse("<sip:1.2.3.4;lr>")
-        self.assertEqual(contact.name, "")
-        self.assertEqual(str(contact.uri), "sip:1.2.3.4;lr")
+        self.assertEqual(
+            contact,
+            Address(
+                uri=URI(
+                    scheme="sip", host="1.2.3.4", parameters=Parameters({"lr": None})
+                )
+            ),
+        )
+        self.assertEqual(str(contact), "<sip:1.2.3.4;lr>")
 
-    def test_rfc4475_wide_range_of_valid_characters(self) -> None:
+    def test_rfc4775_esc01_contact(self) -> None:
+        contact = Address.parse(
+            "<sip:cal%6Cer@host5.example.net;%6C%72;n%61me=v%61lue%25%34%31>"
+        )
+        self.assertEqual(
+            contact,
+            Address(
+                uri=URI(
+                    scheme="sip",
+                    user="caller",
+                    host="host5.example.net",
+                    parameters=Parameters({"lr": None, "name": "value%41"}),
+                ),
+            ),
+        )
+        self.assertEqual(
+            str(contact),
+            "<sip:caller@host5.example.net;lr;name=value%2541>",
+        )
+
+    def test_rfc4775_esc02_from(self) -> None:
+        contact = Address.parse('"%Z%45" <sip:resource@example.com>;tag=f232jadfj23')
+        self.assertEqual(
+            contact,
+            Address(
+                name="%Z%45",
+                uri=URI(
+                    scheme="sip",
+                    user="resource",
+                    host="example.com",
+                ),
+                parameters=Parameters({"tag": "f232jadfj23"}),
+            ),
+        )
+        self.assertEqual(
+            str(contact), '"%Z%45" <sip:resource@example.com>;tag=f232jadfj23'
+        )
+
+    def test_rfc4475_escnull_from(self) -> None:
+        contact = Address.parse("sip:null-%00-null@example.com;tag=839923423")
+        self.assertEqual(
+            contact,
+            Address(
+                uri=URI(
+                    scheme="sip",
+                    host="example.com",
+                    user="null-\x00-null",
+                ),
+                parameters=Parameters({"tag": "839923423"}),
+            ),
+        )
+        self.assertEqual(str(contact), "<sip:null-%00-null@example.com>;tag=839923423")
+
+    def test_rfc4475_intmeth_to(self) -> None:
         contact = Address.parse(
             '"BEL:\x07 NUL:\x00 DEL:\x7f" '
             "<sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com>"
         )
-        self.assertEqual(contact.name, "BEL:\x07 NUL:\x00 DEL:\x7f")
         self.assertEqual(
-            str(contact.uri),
-            "sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*@example.com",
+            contact,
+            Address(
+                name="BEL:\x07 NUL:\x00 DEL:\x7f",
+                uri=URI(
+                    scheme="sip",
+                    user="1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*",
+                    host="example.com",
+                ),
+            ),
         )
-        self.assertEqual(contact.parameters, {})
         self.assertEqual(
             str(contact),
             '"BEL:\x07 NUL:\x00 DEL:\x7f" '

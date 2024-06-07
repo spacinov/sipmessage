@@ -175,7 +175,7 @@ class URITest(unittest.TestCase):
 
         self.assertEqual(str(uri), "sip:alice:sips%3Auser%40example.com@atlanta.com")
 
-    def test_rfc4475_torture(self) -> None:
+    def test_rfc4475_wide_range_of_valid_characters(self) -> None:
         uri = URI.parse(
             "sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*:&it+has=1,weird!*pas$wo~d_too.(doesn't-it)@example.com"
         )
