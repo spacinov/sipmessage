@@ -43,7 +43,6 @@ class Via:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-
         value = grammar.simplify_whitespace(value)
 
         m = VIA_PATTERN.match(value)
@@ -63,6 +62,5 @@ class Via:
         s = f"SIP/2.0/{self.transport} {self.host}"
         if self.port is not None:
             s += f":{self.port}"
-        if self.parameters:
-            s += ";" + str(self.parameters)
+        s += str(self.parameters)
         return s

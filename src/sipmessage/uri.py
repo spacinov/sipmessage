@@ -100,6 +100,5 @@ class URI:
         s += self.host
         if self.port is not None:
             s += f":{self.port}"
-        if self.parameters:
-            s += ";" + str(self.parameters)
+        s += str(self.parameters)
         return s

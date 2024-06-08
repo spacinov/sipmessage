@@ -9,6 +9,11 @@ from sipmessage import URI
 
 
 class URITest(unittest.TestCase):
+    def test_invalid_parameters(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            URI.parse("sip:atlanta.com;")
+        self.assertEqual(str(cm.exception), "URI is not valid")
+
     def test_invalid_port(self) -> None:
         # No port.
         with self.assertRaises(ValueError) as cm:

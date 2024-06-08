@@ -121,6 +121,11 @@ class AddressTest(unittest.TestCase):
         )
         self.assertEqual(str(contact), "<sip:1.2.3.4;lr>")
 
+    def test_rfc4475_badinv01_contact(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Address.parse('"Joe" <sip:joe@example.org>;;;;')
+        self.assertEqual(str(cm.exception), "Address is not valid")
+
     def test_rfc4475_esc01_contact(self) -> None:
         contact = Address.parse(
             "<sip:cal%6Cer@host5.example.net;%6C%72;n%61me=v%61lue%25%34%31>"
