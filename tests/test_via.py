@@ -84,6 +84,11 @@ class ViaTest(unittest.TestCase):
             "received=80.200.136.90;rport=49940",
         )
 
+    def test_rfc4475_badinv01(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Via.parse("SIP/2.0/UDP 192.0.2.15;;")
+        self.assertEqual(str(cm.exception), "Via is not valid")
+
     def test_rfc4475_intmeth(self) -> None:
         via = Via.parse("SIP/2.0/TCP host1.example.com;branch=z9hG4bK-.!%66*_+`'~")
         self.assertEqual(

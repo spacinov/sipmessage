@@ -70,7 +70,6 @@ class Address:
 
         If parsing fails, a :class:`ValueError` is raised.
         """
-
         value = grammar.simplify_whitespace(value)
 
         for pattern in ADDRESS_PATTERNS:
@@ -88,7 +87,5 @@ class Address:
         s = ""
         if self.name:
             s += quote(self.name) + " "
-        s += "<%s>" % self.uri
-        if self.parameters:
-            s += ";" + str(self.parameters)
+        s += f"<{self.uri}>{self.parameters}"
         return s
