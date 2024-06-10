@@ -38,18 +38,21 @@ C_URI_PARAM_SAFE = C_UNRESERVED + "[]/:&+$"
 # Regular expression fragments.
 ALPHA = cset(C_ALPHA)
 ALPHANUM = cset(C_ALPHANUM)
+DIGIT = "\\d"
 HEXDIG = cset(string.hexdigits)
 ESCAPED = f"%{HEXDIG}{{2}}"
+LWS = "[ ]+"
+SWS = "[ ]*"
 TOKEN = f"{cset(C_TOKEN)}+"
 QUOTED_STRING = '"(?:[^"]|\\")*"'
 
-EQUAL = "[ ]*=[ ]*"
-SEMI = "[ ]*;[ ]*"
-SLASH = "[ ]*/[ ]*"
+EQUAL = f"{SWS}={SWS}"
+SEMI = f"{SWS};{SWS}"
+SLASH = f"{SWS}/{SWS}"
 
 HEXSEQ = f"{HEXDIG}{{1,4}}(?::{HEXDIG}{{1,4}})*"
 HEXPART = f"(?:{HEXSEQ}|{HEXSEQ}::(?:{HEXSEQ})?|::(?:{HEXSEQ})?)"
-IPV4ADDRESS = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+IPV4ADDRESS = f"{DIGIT}{{1,3}}\\.{DIGIT}{{1,3}}\\.{DIGIT}{{1,3}}\\.{DIGIT}{{1,3}}"
 IPV6ADDRESS = f"{HEXPART}(?::{IPV4ADDRESS})?"
 IPV6REFERENCE = f"\\[{IPV6ADDRESS}\\]"
 
@@ -60,7 +63,7 @@ HOSTNAME = f"(?:{DOMAINLABEL}\\.)*{TOPLABEL}[\\.]?"
 HOST = f"(?:{HOSTNAME}|{IPV4ADDRESS}|{IPV6REFERENCE})"
 USER = f"(?:{cset(C_USER_SAFE)}|{ESCAPED})+"
 PASSWORD = f"(?:{cset(C_PASSWORD_SAFE)}|{ESCAPED})+"
-PORT = "\\d+"
+PORT = f"{DIGIT}+"
 
 URI_PARAMCHAR = f"(?:{cset(C_URI_PARAM_SAFE)}|{ESCAPED})"
 URI_PARAM = f"{URI_PARAMCHAR}+(?:={URI_PARAMCHAR}+)?"
