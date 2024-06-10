@@ -19,8 +19,7 @@ ADDRESS_PATTERNS = [
         # display-name
         f"^(?P<name>{TOKEN_LWS}*|{grammar.QUOTED_STRING})"
         # LAQUOT addr-spec RAQUOT
-        "[ ]*"
-        "<(?P<uri>[^>]+)>"
+        f"{grammar.SWS}<(?P<uri>[^>]+)>{grammar.SWS}"
         # *(SEMI contact-params)
         f"(?P<parameters>(?:{grammar.SEMI}{grammar.GENERIC_PARAM})*)"
     ),
