@@ -28,7 +28,7 @@ class CSeq:
     @classmethod
     def parse(cls, value: str) -> "CSeq":
         """
-        Parse the given string into an :class:`Address` instance.
+        Parse the given string into an :class:`CSeq` instance.
 
         If parsing fails, a :class:`ValueError` is raised.
         """
