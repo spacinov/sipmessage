@@ -46,7 +46,7 @@ def unquote(value: str) -> str:
         return value
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Address:
     """
     An address as used in `Contact`, `From`, `Reply-To` and `To` headers.

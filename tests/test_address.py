@@ -29,7 +29,7 @@ class AddressTest(unittest.TestCase):
                     user="+12125551212",
                     host="phone2net.com",
                 ),
-                parameters=Parameters({"tag": "887s"}),
+                parameters=Parameters(tag="887s"),
             ),
         )
         self.assertEqual(str(contact), "<sip:+12125551212@phone2net.com>;tag=887s")
@@ -47,7 +47,7 @@ class AddressTest(unittest.TestCase):
                     user="c8oqz84zk7z",
                     host="privacy.org",
                 ),
-                parameters=Parameters({"tag": "hyh8"}),
+                parameters=Parameters(tag="hyh8"),
             ),
         )
         self.assertEqual(
@@ -65,7 +65,7 @@ class AddressTest(unittest.TestCase):
                     user="bob",
                     host="biloxi.com",
                 ),
-                parameters=Parameters({"tag": "a48s"}),
+                parameters=Parameters(tag="a48s"),
             ),
         )
         self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
@@ -81,7 +81,7 @@ class AddressTest(unittest.TestCase):
                     user="bob",
                     host="biloxi.com",
                 ),
-                parameters=Parameters({"tag": "a48s"}),
+                parameters=Parameters(tag="a48s"),
             ),
         )
         self.assertEqual(str(contact), '"Bob" <sips:bob@biloxi.com>;tag=a48s')
@@ -100,7 +100,7 @@ class AddressTest(unittest.TestCase):
                     user="bob",
                     host="biloxi.com",
                 ),
-                parameters=Parameters({"tag": "a48s"}),
+                parameters=Parameters(tag="a48s"),
             ),
         )
         self.assertEqual(
@@ -114,9 +114,7 @@ class AddressTest(unittest.TestCase):
         self.assertEqual(
             contact,
             Address(
-                uri=URI(
-                    scheme="sip", host="1.2.3.4", parameters=Parameters({"lr": None})
-                )
+                uri=URI(scheme="sip", host="1.2.3.4", parameters=Parameters(lr=None))
             ),
         )
         self.assertEqual(str(contact), "<sip:1.2.3.4;lr>")
@@ -137,7 +135,7 @@ class AddressTest(unittest.TestCase):
                     scheme="sip",
                     user="caller",
                     host="host5.example.net",
-                    parameters=Parameters({"lr": None, "name": "value%41"}),
+                    parameters=Parameters(lr=None, name="value%41"),
                 ),
             ),
         )
@@ -157,7 +155,7 @@ class AddressTest(unittest.TestCase):
                     user="resource",
                     host="example.com",
                 ),
-                parameters=Parameters({"tag": "f232jadfj23"}),
+                parameters=Parameters(tag="f232jadfj23"),
             ),
         )
         self.assertEqual(
@@ -174,7 +172,7 @@ class AddressTest(unittest.TestCase):
                     host="example.com",
                     user="null-\x00-null",
                 ),
-                parameters=Parameters({"tag": "839923423"}),
+                parameters=Parameters(tag="839923423"),
             ),
         )
         self.assertEqual(str(contact), "<sip:null-%00-null@example.com>;tag=839923423")

@@ -4,6 +4,7 @@
 #
 
 import re
+from collections.abc import Iterator, Mapping
 from urllib.parse import quote, unquote
 
 from . import grammar
@@ -12,10 +13,13 @@ EQUAL_PATTERN = re.compile(grammar.EQUAL)
 SEMI_PATTERN = re.compile(grammar.SEMI)
 
 
-class Parameters(dict[str, str | None]):
+class Parameters(Mapping[str, str | None]):
     """
-    A dictionary of :class:`Address`, :class:`URI` or :class:`Via` parameters.
+    A mapping of :class:`Address`, :class:`URI` or :class:`Via` parameters.
     """
+
+    def __init__(self, **kwargs: str | None) -> None:
+        self.__data = dict(kwargs)
 
     @classmethod
     def parse(cls, value: str) -> "Parameters":
@@ -26,7 +30,7 @@ class Parameters(dict[str, str | None]):
         """
         value = grammar.simplify_whitespace(value)
 
-        p = cls()
+        data: dict[str, str | None] = {}
         if value:
             bits = SEMI_PATTERN.split(value)
 
@@ -45,8 +49,34 @@ class Parameters(dict[str, str | None]):
                     v = unquote(v)
                 else:
                     k, v = bit, None
-                p[unquote(k)] = v
-        return p
+                data[unquote(k)] = v
+        return cls(**data)
+
+    def replace(self, **changes: str | None) -> "Parameters":
+        """
+        Return a copy of the parameters, updated with the given `changes`.
+        """
+        data = {}
+        data.update(self.__data)
+        data.update(**changes)
+        return Parameters(**data)
+
+    def __getitem__(self, key: str) -> str | None:
+        return self.__data.get(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.__data)
+
+    def __len__(self) -> int:
+        return len(self.__data)
+
+    def __repr__(self) -> str:
+        data = ""
+        for k, v in self.items():
+            if data:
+                data += ", "
+            data += f"{k}={v!r}"
+        return f"Parameters({data})"
 
     def __str__(self) -> str:
         output = ""

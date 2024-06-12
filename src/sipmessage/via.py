@@ -18,7 +18,7 @@ VIA_PATTERN = re.compile(
 )
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Via:
     """
     A `Via` header, indicating a reponse location for a transaction.

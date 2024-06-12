@@ -21,7 +21,7 @@ URI_PATTERN = re.compile(
 )
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class URI:
     """
     A SIP or SIPS URL as described by RFC3261.
