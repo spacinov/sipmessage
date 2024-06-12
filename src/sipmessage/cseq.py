@@ -13,7 +13,7 @@ CSEQ_PATTERN = re.compile(
 )
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class CSeq:
     """
     A `CSeq` header, used to identity and order transactions.

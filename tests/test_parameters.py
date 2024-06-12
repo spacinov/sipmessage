@@ -12,6 +12,8 @@ class ParametersTest(unittest.TestCase):
     def test_empty(self) -> None:
         parameters = Parameters.parse("")
         self.assertEqual(parameters, {})
+        self.assertEqual(len(parameters), 0)
+        self.assertEqual(repr(parameters), "Parameters()")
         self.assertEqual(str(parameters), "")
 
     def test_escaped(self) -> None:
@@ -25,9 +27,18 @@ class ParametersTest(unittest.TestCase):
                 Parameters.parse(s)
             self.assertEqual(str(cm.exception), "Parameters are not valid")
 
+    def test_replace(self) -> None:
+        parameters1 = Parameters(foo="1", bar=None)
+        parameters2 = parameters1.replace(tag="blah")
+
+        self.assertEqual(str(parameters1), ";foo=1;bar")
+        self.assertEqual(str(parameters2), ";foo=1;bar;tag=blah")
+
     def test_simple(self) -> None:
         parameters = Parameters.parse(";foo=1;bar")
         self.assertEqual(parameters, {"foo": "1", "bar": None})
+        self.assertEqual(len(parameters), 2)
+        self.assertEqual(repr(parameters), "Parameters(foo='1', bar=None)")
         self.assertEqual(str(parameters), ";foo=1;bar")
 
     def test_spaces(self) -> None:
