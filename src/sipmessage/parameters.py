@@ -62,7 +62,7 @@ class Parameters(Mapping[str, str | None]):
         return Parameters(**data)
 
     def __getitem__(self, key: str) -> str | None:
-        return self.__data.get(key)
+        return self.__data[key]
 
     def __iter__(self) -> Iterator[str]:
         return iter(self.__data)
