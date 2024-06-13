@@ -41,6 +41,20 @@ class ParametersTest(unittest.TestCase):
         self.assertEqual(repr(parameters), "Parameters(foo='1', bar=None)")
         self.assertEqual(str(parameters), ";foo=1;bar")
 
+        # Check mapping access.
+        self.assertTrue("foo" in parameters)
+        self.assertTrue("bar" in parameters)
+        self.assertFalse("baz" in parameters)
+
+        self.assertEqual(parameters["foo"], "1")
+        self.assertEqual(parameters["bar"], None)
+        with self.assertRaises(KeyError):
+            parameters["baz"]
+
+        self.assertEqual(parameters.get("foo"), "1")
+        self.assertEqual(parameters.get("bar"), None)
+        self.assertEqual(parameters.get("baz"), None)
+
     def test_spaces(self) -> None:
         parameters = Parameters.parse(" ; foo  =  1  ;  bar ")
         self.assertEqual(parameters, {"foo": "1", "bar": None})
