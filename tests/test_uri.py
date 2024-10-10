@@ -166,6 +166,7 @@ class URITest(unittest.TestCase):
         self.assertEqual(uri.password, "secret")
         self.assertEqual(uri.parameters, {})
 
+        self.assertEqual(uri.global_phone_number, None)
         self.assertEqual(str(uri), "sip:alice:secret@atlanta.com")
 
     def test_password_escaped(self) -> None:
@@ -178,6 +179,7 @@ class URITest(unittest.TestCase):
         self.assertEqual(uri.password, "sips:user@example.com")
         self.assertEqual(uri.parameters, {})
 
+        self.assertEqual(uri.global_phone_number, None)
         self.assertEqual(str(uri), "sip:alice:sips%3Auser%40example.com@atlanta.com")
 
     def test_rfc4475_wide_range_of_valid_characters(self) -> None:
@@ -189,7 +191,42 @@ class URITest(unittest.TestCase):
         self.assertEqual(uri.user, "1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*")
         self.assertEqual(uri.password, "&it+has=1,weird!*pas$wo~d_too.(doesn't-it)")
         self.assertEqual(uri.parameters, {})
+
+        self.assertEqual(uri.global_phone_number, None)
         self.assertEqual(
             str(uri),
             "sip:1_unusual.URI~(to-be!sure)&isn't+it$/crazy?,/;;*:&it+has=1,weird!*pas$wo~d_too.(doesn't-it)@example.com",
         )
+
+    def test_tel_global_phone_number(self) -> None:
+        uri = URI.parse("tel:+12015550123")
+        self.assertEqual(uri.host, "")
+        self.assertEqual(uri.user, "+12015550123")
+        self.assertEqual(uri.password, None)
+        self.assertEqual(uri.parameters, {})
+
+        self.assertEqual(uri.global_phone_number, "+12015550123")
+        self.assertEqual(str(uri), "tel:+12015550123")
+
+    def test_tel_uri_global_phone_number_with_visual_separators(self) -> None:
+        uri = URI.parse("tel:+1-201-555-0123")
+        self.assertEqual(uri.host, "")
+        self.assertEqual(uri.user, "+1-201-555-0123")
+        self.assertEqual(uri.password, None)
+        self.assertEqual(uri.parameters, {})
+
+        self.assertEqual(uri.global_phone_number, "+12015550123")
+        self.assertEqual(str(uri), "tel:+1-201-555-0123")
+
+    def test_tel_uri_local_phone_number(self) -> None:
+        uri = URI.parse("tel:7042;phone-context=example.com")
+        self.assertEqual(uri.host, "")
+        self.assertEqual(uri.user, "7042")
+        self.assertEqual(uri.password, None)
+        self.assertEqual(
+            uri.parameters,
+            {"phone-context": "example.com"},
+        )
+
+        self.assertEqual(uri.global_phone_number, None)
+        self.assertEqual(str(uri), "tel:7042;phone-context=example.com")
