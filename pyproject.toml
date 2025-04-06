@@ -15,7 +15,7 @@ requires-python = ">= 3.10"
 authors = [
     {name = "Spacinov Engineering", email="opensource@spacinov.com"},
 ]
-license = {text = "BSD License"}
+license = "BSD-2-Clause"
 
 # Description
 description = "Pure python parsing of SIP messages and headers"
@@ -27,7 +27,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "Intended Audience :: Telecommunications Industry",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
