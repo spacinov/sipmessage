@@ -46,6 +46,7 @@ SWS = "[ ]*"
 TOKEN = f"{cset(C_TOKEN)}+"
 QUOTED_STRING = '"(?:[^"]|\\")*"'
 
+COMMA = f"{SWS},{SWS}"
 EQUAL = f"{SWS}={SWS}"
 SEMI = f"{SWS};{SWS}"
 SLASH = f"{SWS}/{SWS}"
@@ -70,3 +71,5 @@ URI_PARAM = f"{URI_PARAMCHAR}+(?:={URI_PARAMCHAR}+)?"
 
 GENERIC_VALUE = f"(?:{TOKEN}|{HOST}|{QUOTED_STRING})"
 GENERIC_PARAM = f"{TOKEN}(?:{EQUAL}{GENERIC_VALUE})?"
+
+AUTH_PARAM = f"{TOKEN}{EQUAL}(?:{TOKEN}|{QUOTED_STRING})"
