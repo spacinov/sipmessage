@@ -72,3 +72,6 @@ select = [
     "I",  # isort
     "T20",  # flake8-print
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/test_message.py" = ["E501"]
