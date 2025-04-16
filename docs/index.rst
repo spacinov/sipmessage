@@ -23,8 +23,8 @@ for parsing SIP messages.
 API Reference
 -------------
 
-.. automodule:: sipmessage
-   :members:
-
 .. toctree::
    :maxdepth: 2
+
+   messages
+   headers
