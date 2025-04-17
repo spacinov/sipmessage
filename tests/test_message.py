@@ -3,7 +3,9 @@
 # Distributed under the 2-clause BSD license
 #
 
+import datetime
 import unittest
+import zoneinfo
 
 from sipmessage import (
     URI,
@@ -333,6 +335,24 @@ Content-Length: 0
         self.assertEqual(request.cseq, CSEQ)
         self.assertMessageHeaders(request, ["CSeq: 1 OPTIONS"])
 
+    def test_header_date(self) -> None:
+        request = dummy_message()
+
+        self.assertEqual(request.date, None)
+
+        request.date = datetime.datetime(
+            2010, 11, 14, 0, 29, tzinfo=zoneinfo.ZoneInfo("Europe/Paris")
+        )
+        self.assertEqual(
+            request.date,
+            datetime.datetime(2010, 11, 13, 23, 29, tzinfo=datetime.timezone.utc),
+        )
+        self.assertMessageHeaders(request, ["Date: Sat, 13 Nov 2010 23:29:00 GMT"])
+
+        request.date = None
+        self.assertEqual(request.date, None)
+        self.assertMessageHeaders(request, [])
+
     def test_header_from_address(self) -> None:
         request = dummy_message()
 
@@ -405,6 +425,24 @@ Content-Length: 0
         request.route = [ADDRESS]
         self.assertEqual(request.route, [ADDRESS])
         self.assertMessageHeaders(request, ["Route: <sip:example.com>"])
+
+    def test_header_server(self) -> None:
+        request = dummy_message()
+
+        self.assertEqual(request.server, None)
+
+        request.server = "HomeServer v2"
+        self.assertEqual(request.server, "HomeServer v2")
+        self.assertMessageHeaders(request, ["Server: HomeServer v2"])
+
+    def test_header_subject(self) -> None:
+        request = dummy_message()
+
+        self.assertEqual(request.subject, None)
+
+        request.subject = "Need more boxes"
+        self.assertEqual(request.subject, "Need more boxes")
+        self.assertMessageHeaders(request, ["Subject: Need more boxes"])
 
     def test_header_to_address(self) -> None:
         request = dummy_message()

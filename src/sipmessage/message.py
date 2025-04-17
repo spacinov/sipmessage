@@ -4,6 +4,8 @@
 #
 
 import dataclasses
+import datetime
+import email.utils
 from typing import Union
 
 from .address import Address
@@ -240,6 +242,29 @@ class Message:
         self._headers.set("CSeq", str(value))
 
     @property
+    def date(self) -> datetime.datetime | None:
+        """
+        The `Date` header value.
+
+        :rfc:`3261#section-20.17`
+        """
+        str_value = self._get_optional_str("Date")
+        if str_value is None:
+            return None
+        else:
+            return email.utils.parsedate_to_datetime(str_value)
+
+    @date.setter
+    def date(self, value: datetime.datetime | None) -> None:
+        if value is None:
+            str_value = None
+        else:
+            str_value = email.utils.format_datetime(
+                value.astimezone(datetime.timezone.utc), usegmt=True
+            )
+        self._set_optional_str("Date", str_value)
+
+    @property
     def from_address(self) -> Address:
         """
         The `From` header value.
@@ -290,6 +315,32 @@ class Message:
     @proxy_authorization.setter
     def proxy_authorization(self, value: AuthCredentials | None) -> None:
         self._set_auth_credentials("Proxy-Authorization", value)
+
+    @property
+    def server(self) -> str | None:
+        """
+        The `Server` header value.
+
+        :rfc:`3261#section-20.35`
+        """
+        return self._get_optional_str("Server")
+
+    @server.setter
+    def server(self, value: str | None) -> None:
+        self._set_optional_str("Server", value)
+
+    @property
+    def subject(self) -> str | None:
+        """
+        The `Subject` header value.
+
+        :rfc:`3261#section-20.36`
+        """
+        return self._get_optional_str("Subject")
+
+    @subject.setter
+    def subject(self, value: str | None) -> None:
+        self._set_optional_str("Subject", value)
 
     @property
     def to_address(self) -> Address:
