@@ -12,6 +12,29 @@ from .cseq import CSeq
 from .uri import URI
 from .via import Via
 
+# https://www.iana.org/assignments/sip-parameters/sip-parameters.xhtml#sip-parameters-2
+COMPACT_FORMS = {
+    "a": "Accept-Contact",  # RFC3841
+    "u": "Allow-Events",  # RFC6665
+    "i": "Call-ID",  # RFC3261
+    "m": "Contact",  # RFC3261
+    "e": "Content-Encoding",  # RFC3261
+    "l": "Content-Length",  # RFC3261
+    "c": "Content-Type",  # RFC3261
+    "o": "Event",  # RFC6665
+    "f": "From",  # RFC3261
+    "y": "Identity",  # RFC8224
+    "r": "Refer-To",  # RFC3515
+    "b": "Referred-By",  # RFC3892
+    "j": "Reject-Contact",  # RFC3841
+    "d": "Request-Disposition",  # RFC3841
+    "x": "Session-Expires",  # RFC4028
+    "s": "Subject",  # RFC3261
+    "k": "Supported",  # RFC3261
+    "t": "To",  # RFC3261
+    "v": "Via",  # RFC3261
+}
+
 
 class Headers:
     def __init__(self) -> None:
@@ -133,6 +156,7 @@ class Message:
                 message.body = "\r\n".join(lines)
                 break
             key, val = line.split(":", 1)
+            key = COMPACT_FORMS.get(key.lower(), key)
             message._headers.add(key, val.strip())
 
         return message

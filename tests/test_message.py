@@ -146,12 +146,22 @@ Via: SIP/2.0/UDP pc33.atlanta.com;branch=z9hG4bKnashds8;received=192.0.2.1
 class MessageTest(unittest.TestCase):
     maxDiff = None
 
-    def assertMessageHeaders(self, request: Message, values: list[str]) -> None:
-        self.assertEqual(str(request).split("\r\n")[1:-2], values)
+    REQUEST_COMPACT_STR = lf2crlf(
+        """REGISTER sip:atlanta.com SIP/2.0
+v: SIP/2.0/WSS mYn6S3lQaKjo.invalid;branch=z9hG4bKgD24yaj
+Max-Forwards: 70
+t: <sip:alice@atlanta.com>
+f: <sip:alice@atlanta.com>;tag=69piINLbAb
+i: t87Br1RHAoBz2FsrKKk6hV
+CSeq: 1 REGISTER
+m: <sip:Mk9sZp5Z@mYn6S3lQaKjo.invalid;transport=ws>;expires=300
+User-Agent: Tester/0.1.0
+l: 0
 
-    def test_request(self) -> None:
-        message_str = lf2crlf(
-            """REGISTER sip:atlanta.com SIP/2.0
+"""
+    )
+    REQUEST_FULL_STR = lf2crlf(
+        """REGISTER sip:atlanta.com SIP/2.0
 Via: SIP/2.0/WSS mYn6S3lQaKjo.invalid;branch=z9hG4bKgD24yaj
 Max-Forwards: 70
 To: <sip:alice@atlanta.com>
@@ -163,8 +173,12 @@ User-Agent: Tester/0.1.0
 Content-Length: 0
 
 """
-        )
+    )
 
+    def assertMessageHeaders(self, request: Message, values: list[str]) -> None:
+        self.assertEqual(str(request).split("\r\n")[1:-2], values)
+
+    def _test_request(self, message_str: str) -> None:
         message = Message.parse(message_str)
         assert isinstance(message, Request)
 
@@ -217,7 +231,13 @@ Content-Length: 0
         )
         self.assertEqual(message.www_authenticate, None)
 
-        self.assertEqual(str(message), message_str)
+        self.assertEqual(str(message), self.REQUEST_FULL_STR)
+
+    def test_request_compact_form(self) -> None:
+        self._test_request(self.REQUEST_COMPACT_STR)
+
+    def test_request_full_form(self) -> None:
+        self._test_request(self.REQUEST_FULL_STR)
 
     def test_response(self) -> None:
         message_str = lf2crlf(
