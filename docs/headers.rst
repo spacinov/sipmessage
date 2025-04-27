@@ -19,5 +19,8 @@ Headers
 .. autoclass:: sipmessage.Parameters
    :members:
 
+.. autoclass:: sipmessage.URI
+   :members:
+
 .. autoclass:: sipmessage.Via
    :members:
