@@ -126,37 +126,39 @@ class Headers:
 
 
 class Message:
-    body: str
+    body: bytes
 
     _headers: Headers
 
     @staticmethod
-    def parse(data: str) -> Union["Request", "Response"]:
+    def parse(data: bytes) -> Union["Request", "Response"]:
         """
         Parse the given string into a :class:`Request` or :class:`Response` instance.
 
         If parsing fails, a :class:`ValueError` is raised.
         """
+        if not isinstance(data, bytes):
+            raise ValueError("SIP message must be passed as bytes")
 
-        lines = data.split("\r\n")
-        if len(lines) < 2:
+        try:
+            header, body = data.split(b"\r\n\r\n", 1)
+        except ValueError:
             raise ValueError("SIP message has too few lines")
 
-        # parse first line
-        bits = lines.pop(0).split(" ", 2)
+        lines = header.decode("utf8").split("\r\n")
+
+        # Parse first line.
+        bits = lines[0].split(" ", 2)
         message: Request | Response
         if len(bits) > 2 and bits[2] == "SIP/2.0":
-            message = Request(method=bits[0], uri=URI.parse(bits[1]))
+            message = Request(method=bits[0], uri=URI.parse(bits[1]), body=body)
         elif len(bits) > 2 and bits[0] == "SIP/2.0":
-            message = Response(code=int(bits[1]), phrase=bits[2])
+            message = Response(code=int(bits[1]), phrase=bits[2], body=body)
         else:
             raise ValueError("SIP message is neither request nor response")
 
-        while len(lines):
-            line = lines.pop(0)
-            if line == "":
-                message.body = "\r\n".join(lines)
-                break
+        # Parse headers.
+        for line in lines[1:]:
             key, val = line.split(":", 1)
             key = COMPACT_FORMS.get(key.lower(), key)
             message._headers.add(key, val.strip())
@@ -493,18 +495,20 @@ class Request(Message):
     uri: URI
     "The request URI."
 
-    body: str = ""
+    body: bytes = b""
     "The request body."
 
     _headers: Headers = dataclasses.field(default_factory=Headers)
 
-    def __str__(self) -> str:
-        return "%s %s SIP/2.0\r\n%s%s" % (
-            self.method,
-            self.uri,
-            self._headers,
-            self.body,
-        )
+    def __bytes__(self) -> bytes:
+        return (
+            "%s %s SIP/2.0\r\n%s"
+            % (
+                self.method,
+                self.uri,
+                self._headers,
+            )
+        ).encode("utf8") + self.body
 
 
 @dataclasses.dataclass
@@ -519,15 +523,17 @@ class Response(Message):
     phrase: str
     "The response phrase."
 
-    body: str = ""
+    body: bytes = b""
     "The response body."
 
     _headers: Headers = dataclasses.field(default_factory=Headers)
 
-    def __str__(self) -> str:
-        return "SIP/2.0 %s %s\r\n%s%s" % (
-            self.code,
-            self.phrase,
-            self._headers,
-            self.body,
-        )
+    def __bytes__(self) -> bytes:
+        return (
+            "SIP/2.0 %s %s\r\n%s"
+            % (
+                self.code,
+                self.phrase,
+                self._headers,
+            )
+        ).encode("utf8") + self.body
