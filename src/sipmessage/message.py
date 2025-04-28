@@ -220,7 +220,7 @@ class Message:
     @property
     def content_type(self) -> str | None:
         """
-        The `Content-Length` header value.
+        The `Content-Type` header value.
 
         :rfc:`3261#section-20.15`
         """
@@ -415,7 +415,7 @@ class Message:
     @property
     def www_authenticate(self) -> AuthChallenge | None:
         """
-        The `WWW-Authenticate` header values.
+        The `WWW-Authenticate` header value.
 
         :rfc:`3261#section-20.44`
         """
