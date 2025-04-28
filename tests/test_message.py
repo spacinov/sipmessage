@@ -4,6 +4,7 @@
 #
 
 import datetime
+import typing
 import unittest
 import zoneinfo
 
@@ -51,13 +52,18 @@ VIA = Via(
     parameters=Parameters(branch="z9hG4bKgD24yaj"),
 )
 
+T = typing.TypeVar("T", bytes, str)
+
 
 def dummy_message() -> Request:
     return Request("OPTIONS", URI(scheme="sip", host="example.com"))
 
 
-def lf2crlf(x: str) -> str:
-    return x.replace("\n", "\r\n")
+def lf2crlf(x: T) -> T:
+    if isinstance(x, bytes):
+        return x.replace(b"\n", b"\r\n")
+    else:
+        return x.replace("\n", "\r\n")
 
 
 class HeadersTest(unittest.TestCase):
@@ -148,8 +154,8 @@ Via: SIP/2.0/UDP pc33.atlanta.com;branch=z9hG4bKnashds8;received=192.0.2.1
 class MessageTest(unittest.TestCase):
     maxDiff = None
 
-    REQUEST_COMPACT_STR = lf2crlf(
-        """REGISTER sip:atlanta.com SIP/2.0
+    REQUEST_COMPACT_BYTES = lf2crlf(
+        b"""REGISTER sip:atlanta.com SIP/2.0
 v: SIP/2.0/WSS mYn6S3lQaKjo.invalid;branch=z9hG4bKgD24yaj
 Max-Forwards: 70
 t: <sip:alice@atlanta.com>
@@ -162,8 +168,8 @@ l: 0
 
 """
     )
-    REQUEST_FULL_STR = lf2crlf(
-        """REGISTER sip:atlanta.com SIP/2.0
+    REQUEST_FULL_BYTES = lf2crlf(
+        b"""REGISTER sip:atlanta.com SIP/2.0
 Via: SIP/2.0/WSS mYn6S3lQaKjo.invalid;branch=z9hG4bKgD24yaj
 Max-Forwards: 70
 To: <sip:alice@atlanta.com>
@@ -178,15 +184,15 @@ Content-Length: 0
     )
 
     def assertMessageHeaders(self, request: Message, values: list[str]) -> None:
-        self.assertEqual(str(request).split("\r\n")[1:-2], values)
+        self.assertEqual(str(request._headers).split("\r\n")[:-2], values)
 
-    def _test_request(self, message_str: str) -> None:
-        message = Message.parse(message_str)
+    def _test_request(self, message_bytes: bytes) -> None:
+        message = Message.parse(message_bytes)
         assert isinstance(message, Request)
 
         self.assertEqual(message.method, "REGISTER")
         self.assertEqual(message.uri, URI(scheme="sip", host="atlanta.com"))
-        self.assertEqual(message.body, "")
+        self.assertEqual(message.body, b"")
 
         # Check headers.
         self.assertEqual(message.call_id, "t87Br1RHAoBz2FsrKKk6hV")
@@ -233,17 +239,17 @@ Content-Length: 0
         )
         self.assertEqual(message.www_authenticate, None)
 
-        self.assertEqual(str(message), self.REQUEST_FULL_STR)
+        self.assertEqual(bytes(message), self.REQUEST_FULL_BYTES)
 
     def test_request_compact_form(self) -> None:
-        self._test_request(self.REQUEST_COMPACT_STR)
+        self._test_request(self.REQUEST_COMPACT_BYTES)
 
     def test_request_full_form(self) -> None:
-        self._test_request(self.REQUEST_FULL_STR)
+        self._test_request(self.REQUEST_FULL_BYTES)
 
     def test_response(self) -> None:
-        message_str = lf2crlf(
-            """SIP/2.0 200 OK
+        message_bytes = lf2crlf(
+            b"""SIP/2.0 200 OK
 Via: SIP/2.0/WSS K1IXduq1pcuX.invalid;branch=z9hG4bKAVaf5Tk;received=80.200.136.90;rport=54087
 From: <sip:alice@atlanta.com>;tag=8hZmsuF0Kb
 To: <sip:alice@atlanta.com>;tag=Bg8X3vvKyrmKH
@@ -258,14 +264,14 @@ Content-Length: 0
 """
         )
 
-        message = Message.parse(message_str)
+        message = Message.parse(message_bytes)
         assert isinstance(message, Response)
 
         self.assertEqual(message.code, 200)
         self.assertEqual(message.phrase, "OK")
-        self.assertEqual(message.body, "")
+        self.assertEqual(message.body, b"")
 
-        self.assertEqual(str(message), message_str)
+        self.assertEqual(bytes(message), message_bytes)
 
     def test_header_authorization(self) -> None:
         request = dummy_message()
@@ -496,14 +502,19 @@ Content-Length: 0
         self.assertEqual(request.www_authenticate, None)
         self.assertMessageHeaders(request, [])
 
+    def test_not_bytes(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            Message.parse("SIP/2.0 200 OK")  # type: ignore
+        self.assertEqual(str(cm.exception), "SIP message must be passed as bytes")
+
     def test_too_few_lines(self) -> None:
         with self.assertRaises(ValueError) as cm:
-            Message.parse("SIP/2.0 200 OK")
+            Message.parse(b"SIP/2.0 200 OK")
         self.assertEqual(str(cm.exception), "SIP message has too few lines")
 
     def test_neither_request_nor_response(self) -> None:
         with self.assertRaises(ValueError) as cm:
-            Message.parse("SIP/3.0\r\n")
+            Message.parse(b"SIP/3.0\r\n\r\n")
         self.assertEqual(
             str(cm.exception), "SIP message is neither request nor response"
         )
