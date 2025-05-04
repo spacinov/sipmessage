@@ -15,7 +15,8 @@ SEMI_PATTERN = re.compile(grammar.SEMI)
 
 class Parameters(Mapping[str, str | None]):
     """
-    A mapping of :class:`Address`, :class:`URI` or :class:`Via` parameters.
+    A mapping of :class:`Address`, :class:`MediaType`, :class:`URI` or :class:`Via`
+    parameters.
     """
 
     def __init__(self, **kwargs: str | None) -> None:
