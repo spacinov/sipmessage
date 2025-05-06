@@ -8,7 +8,7 @@ import importlib.metadata
 from .address import Address
 from .auth import AuthChallenge, AuthCredentials, AuthParameters
 from .cseq import CSeq
-from .message import Message, Request, Response
+from .message import Headers, Message, Request, Response
 from .parameters import Parameters
 from .uri import URI
 from .via import Via
@@ -19,6 +19,7 @@ __all__ = [
     "AuthCredentials",
     "AuthParameters",
     "CSeq",
+    "Headers",
     "Message",
     "Parameters",
     "Request",
