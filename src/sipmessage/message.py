@@ -3,7 +3,6 @@
 # Distributed under the 2-clause BSD license
 #
 
-import dataclasses
 import datetime
 import email.utils
 from typing import Union
@@ -39,6 +38,10 @@ COMPACT_FORMS = {
 
 
 class Headers:
+    """
+    A dictionary-like storage of SIP headers with support for multiple values.
+    """
+
     def __init__(self) -> None:
         self._list: list[tuple[str, list[str]]] = []
 
@@ -127,8 +130,7 @@ class Headers:
 
 class Message:
     body: bytes
-
-    _headers: Headers
+    headers: Headers
 
     @staticmethod
     def parse(data: bytes) -> Union["Request", "Response"]:
@@ -161,7 +163,7 @@ class Message:
         for line in lines[1:]:
             key, val = line.split(":", 1)
             key = COMPACT_FORMS.get(key.lower(), key)
-            message._headers.add(key, val.strip())
+            message.headers.add(key, val.strip())
 
         return message
 
@@ -185,11 +187,11 @@ class Message:
 
         :rfc:`3261#section-20.8`
         """
-        return self._headers["Call-ID"]
+        return self.headers["Call-ID"]
 
     @call_id.setter
     def call_id(self, value: str) -> None:
-        self._headers.set("Call-ID", value)
+        self.headers.set("Call-ID", value)
 
     @property
     def contact(self) -> list[Address]:
@@ -237,11 +239,11 @@ class Message:
 
         :rfc:`3261#section-20.16`
         """
-        return CSeq.parse(self._headers["CSeq"])
+        return CSeq.parse(self.headers["CSeq"])
 
     @cseq.setter
     def cseq(self, value: CSeq) -> None:
-        self._headers.set("CSeq", str(value))
+        self.headers.set("CSeq", str(value))
 
     @property
     def date(self) -> datetime.datetime | None:
@@ -273,11 +275,11 @@ class Message:
 
         :rfc:`3261#section-20.20`
         """
-        return Address.parse(self._headers["From"])
+        return Address.parse(self.headers["From"])
 
     @from_address.setter
     def from_address(self, value: Address) -> None:
-        self._headers.set("From", str(value))
+        self.headers.set("From", str(value))
 
     @property
     def max_forwards(self) -> int | None:
@@ -351,11 +353,11 @@ class Message:
 
         :rfc:`3261#section-20.39`
         """
-        return Address.parse(self._headers["To"])
+        return Address.parse(self.headers["To"])
 
     @to_address.setter
     def to_address(self, value: Address) -> None:
-        self._headers.set("To", str(value))
+        self.headers.set("To", str(value))
 
     @property
     def record_route(self) -> list[Address]:
@@ -404,13 +406,13 @@ class Message:
         :rfc:`3261#section-20.42`
         """
         headers: list[Via] = []
-        for value in self._headers.getlist("Via"):
+        for value in self.headers.getlist("Via"):
             headers += Via.parse_many(value)
         return headers
 
     @via.setter
     def via(self, value: list[Via]) -> None:
-        self._headers.setlist("Via", [str(x) for x in value])
+        self.headers.setlist("Via", [str(x) for x in value])
 
     @property
     def www_authenticate(self) -> AuthChallenge | None:
@@ -427,15 +429,15 @@ class Message:
 
     def _get_address_list(self, key: str) -> list[Address]:
         headers: list[Address] = []
-        for value in self._headers.getlist(key):
+        for value in self.headers.getlist(key):
             headers += Address.parse_many(value)
         return headers
 
     def _set_address_list(self, key: str, value: list[Address]) -> None:
-        self._headers.setlist(key, [str(x) for x in value])
+        self.headers.setlist(key, [str(x) for x in value])
 
     def _get_auth_challenge(self, key: str) -> AuthChallenge | None:
-        value = self._headers.get(key, None)
+        value = self.headers.get(key, None)
         if value is None:
             return None
         else:
@@ -443,12 +445,12 @@ class Message:
 
     def _set_auth_challenge(self, key: str, value: AuthChallenge | None) -> None:
         if value is None:
-            self._headers.remove(key)
+            self.headers.remove(key)
         else:
-            self._headers.set(key, str(value))
+            self.headers.set(key, str(value))
 
     def _get_auth_credentials(self, key: str) -> AuthCredentials | None:
-        value = self._headers.get(key, None)
+        value = self.headers.get(key, None)
         if value is None:
             return None
         else:
@@ -456,12 +458,12 @@ class Message:
 
     def _set_auth_credentials(self, key: str, value: AuthCredentials | None) -> None:
         if value is None:
-            self._headers.remove(key)
+            self.headers.remove(key)
         else:
-            self._headers.set(key, str(value))
+            self.headers.set(key, str(value))
 
     def _get_optional_int(self, key: str) -> int | None:
-        value = self._headers.get(key, None)
+        value = self.headers.get(key, None)
         if value is None:
             return None
         else:
@@ -469,21 +471,20 @@ class Message:
 
     def _set_optional_int(self, key: str, value: int | None) -> None:
         if value is None:
-            self._headers.remove(key)
+            self.headers.remove(key)
         else:
-            self._headers.set(key, str(value))
+            self.headers.set(key, str(value))
 
     def _get_optional_str(self, key: str) -> str | None:
-        return self._headers.get(key, None)
+        return self.headers.get(key, None)
 
     def _set_optional_str(self, key: str, value: str | None) -> None:
         if value is None:
-            self._headers.remove(key)
+            self.headers.remove(key)
         else:
-            self._headers.set(key, value)
+            self.headers.set(key, value)
 
 
-@dataclasses.dataclass
 class Request(Message):
     """
     A SIP request.
@@ -495,10 +496,17 @@ class Request(Message):
     uri: URI
     "The request URI."
 
-    body: bytes = b""
+    body: bytes
     "The request body."
 
-    _headers: Headers = dataclasses.field(default_factory=Headers)
+    headers: Headers
+    "The request headers in raw form. It is usually better to use the typed accessors."
+
+    def __init__(self, method: str, uri: URI, body: bytes = b"") -> None:
+        self.method = method
+        self.uri = uri
+        self.body = body
+        self.headers = Headers()
 
     def __bytes__(self) -> bytes:
         return (
@@ -506,12 +514,11 @@ class Request(Message):
             % (
                 self.method,
                 self.uri,
-                self._headers,
+                self.headers,
             )
         ).encode("utf8") + self.body
 
 
-@dataclasses.dataclass
 class Response(Message):
     """
     A SIP response.
@@ -523,10 +530,17 @@ class Response(Message):
     phrase: str
     "The response phrase."
 
-    body: bytes = b""
+    body: bytes
     "The response body."
 
-    _headers: Headers = dataclasses.field(default_factory=Headers)
+    headers: Headers
+    "The response headers in raw form. It is usually better to use the typed accessors."
+
+    def __init__(self, code: int, phrase: str, body: bytes = b"") -> None:
+        self.code = code
+        self.phrase = phrase
+        self.body = body
+        self.headers = Headers()
 
     def __bytes__(self) -> bytes:
         return (
@@ -534,6 +548,6 @@ class Response(Message):
             % (
                 self.code,
                 self.phrase,
-                self._headers,
+                self.headers,
             )
         ).encode("utf8") + self.body

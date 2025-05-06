@@ -184,7 +184,7 @@ Content-Length: 0
     )
 
     def assertMessageHeaders(self, request: Message, values: list[str]) -> None:
-        self.assertEqual(str(request._headers).split("\r\n")[:-2], values)
+        self.assertEqual(str(request.headers).split("\r\n")[:-2], values)
 
     def _test_request(self, message_bytes: bytes) -> None:
         message = Message.parse(message_bytes)

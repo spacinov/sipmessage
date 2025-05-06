@@ -13,3 +13,6 @@ Messages
    :members:
    :inherited-members:
    :exclude-members: parse
+
+.. autoclass:: sipmessage.Headers
+   :members:
