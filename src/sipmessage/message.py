@@ -77,6 +77,12 @@ class Headers:
                 return values
         return []
 
+    def keys(self) -> list[str]:
+        """
+        Return the names of all the headers.
+        """
+        return [k for (k, _values) in self._list]
+
     def remove(self, key: str) -> None:
         """
         Remove the given header.

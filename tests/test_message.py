@@ -79,6 +79,7 @@ class HeadersTest(unittest.TestCase):
 
 """),
         )
+        self.assertEqual(headers.keys(), ["Via"])
 
         headers.add(
             "Via",
@@ -101,6 +102,7 @@ From: <sip:alice@atlanta.com>
 
 """),
         )
+        self.assertEqual(headers.keys(), ["Via", "From"])
 
     def test_set(self) -> None:
         headers = Headers()
@@ -112,6 +114,7 @@ From: <sip:alice@atlanta.com>
 
 """),
         )
+        self.assertEqual(headers.keys(), ["To"])
 
         headers.set("To", "Alice <sip:alice@biloxi.com>")
         self.assertEqual(
@@ -134,6 +137,7 @@ From: <sip:alice@atlanta.com>
 
 """),
         )
+        self.assertEqual(headers.keys(), ["Via"])
 
         headers.setlist(
             "Via",
@@ -149,6 +153,7 @@ Via: SIP/2.0/UDP pc33.atlanta.com;branch=z9hG4bKnashds8;received=192.0.2.1
 
 """),
         )
+        self.assertEqual(headers.keys(), ["Via"])
 
 
 class MessageTest(unittest.TestCase):
