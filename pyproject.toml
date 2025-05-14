@@ -47,7 +47,6 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://sipmessage.readthedocs.io/"
 Documentation = "https://sipmessage.readthedocs.io/"
 Repository = "https://github.com/spacinov/sipmessage"
 Issues = "https://github.com/spacinov/sipmessage/issues"
