@@ -22,9 +22,6 @@ for parsing and serialising SIP messages. It can be used to manipulate either
 either entire :doc:`requests and responses <messages>` or individual
 :doc:`header values <headers>`.
 
-Example
--------
-
 .. code:: python
 
     from sipmessage import Message, Parameters, Request, Via
@@ -52,12 +49,15 @@ Example
     ]
 
 
-API Reference
--------------
-
 .. toctree::
-   :maxdepth: 2
+   :caption: API Reference
+   :hidden:
 
    messages
    headers
+
+.. toctree::
+   :caption: About sipmessage
+   :hidden:
+
    license
