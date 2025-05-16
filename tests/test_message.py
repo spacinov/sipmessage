@@ -419,6 +419,18 @@ Content-Length: 0
         self.assertEqual(request.proxy_authorization, None)
         self.assertMessageHeaders(request, [])
 
+    def test_header_proxy_require(self) -> None:
+        request = dummy_message()
+        self.assertEqual(request.proxy_require, [])
+
+        request.proxy_require = ["foo"]
+        self.assertEqual(request.proxy_require, ["foo"])
+        self.assertMessageHeaders(request, ["Proxy-Require: foo"])
+
+        request.proxy_require = []
+        self.assertEqual(request.proxy_require, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_record_route(self) -> None:
         request = dummy_message()
 

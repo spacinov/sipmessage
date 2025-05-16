@@ -327,6 +327,19 @@ class Message:
         self._set_auth_credentials("Proxy-Authorization", value)
 
     @property
+    def proxy_require(self) -> list[str]:
+        """
+        The `Proxy-Require` header values.
+
+        :rfc:`3261#section-20.29`
+        """
+        return self._get_token_list("Proxy-Require")
+
+    @proxy_require.setter
+    def proxy_require(self, value: list[str]) -> None:
+        self._set_token_list("Proxy-Require", value)
+
+    @property
     def record_route(self) -> list[Address]:
         """
         The `Record-Route` header values.
