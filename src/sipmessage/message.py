@@ -10,6 +10,7 @@ from typing import Union
 from .address import Address
 from .auth import AuthChallenge, AuthCredentials
 from .cseq import CSeq
+from .mediatype import MediaType
 from .uri import URI
 from .via import Via
 
@@ -239,17 +240,25 @@ class Message:
         self._set_optional_int("Content-Length", value)
 
     @property
-    def content_type(self) -> str | None:
+    def content_type(self) -> MediaType | None:
         """
         The `Content-Type` header value.
 
         :rfc:`3261#section-20.15`
         """
-        return self._get_optional_str("Content-Type")
+        str_value = self._get_optional_str("Content-Type")
+        if str_value is None:
+            return None
+        else:
+            return MediaType.parse(str_value)
 
     @content_type.setter
-    def content_type(self, value: str | None) -> None:
-        self._set_optional_str("Content-Type", value)
+    def content_type(self, value: MediaType | None) -> None:
+        if value is None:
+            str_value = None
+        else:
+            str_value = str(value)
+        self._set_optional_str("Content-Type", str_value)
 
     @property
     def cseq(self) -> CSeq:

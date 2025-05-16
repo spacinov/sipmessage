@@ -15,6 +15,7 @@ from sipmessage import (
     AuthCredentials,
     AuthParameters,
     CSeq,
+    MediaType,
     Message,
     Parameters,
     Request,
@@ -368,8 +369,8 @@ Content-Length: 0
         self.assertIsNone(request.content_type)
 
         # Add the header.
-        request.content_type = "application/sdp"
-        self.assertEqual(request.content_type, "application/sdp")
+        request.content_type = MediaType(mime_type="application/sdp")
+        self.assertEqual(request.content_type, MediaType(mime_type="application/sdp"))
         self.assertMessageHeaders(request, ["Content-Type: application/sdp"])
 
         # Remove the header.
