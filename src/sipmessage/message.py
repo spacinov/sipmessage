@@ -327,6 +327,45 @@ class Message:
         self._set_auth_credentials("Proxy-Authorization", value)
 
     @property
+    def record_route(self) -> list[Address]:
+        """
+        The `Record-Route` header values.
+
+        :rfc:`3261#section-20.30`
+        """
+        return self._get_address_list("Record-Route")
+
+    @record_route.setter
+    def record_route(self, value: list[Address]) -> None:
+        self._set_address_list("Record-Route", value)
+
+    @property
+    def require(self) -> list[str]:
+        """
+        The `Require` header values.
+
+        :rfc:`3261#section-20.32`
+        """
+        return self._get_token_list("Require")
+
+    @require.setter
+    def require(self, value: list[str]) -> None:
+        self._set_token_list("Require", value)
+
+    @property
+    def route(self) -> list[Address]:
+        """
+        The `Route` header values.
+
+        :rfc:`3261#section-20.34`
+        """
+        return self._get_address_list("Route")
+
+    @route.setter
+    def route(self, value: list[Address]) -> None:
+        self._set_address_list("Route", value)
+
+    @property
     def server(self) -> str | None:
         """
         The `Server` header value.
@@ -353,6 +392,19 @@ class Message:
         self._set_optional_str("Subject", value)
 
     @property
+    def supported(self) -> list[str]:
+        """
+        The `Supported` header values.
+
+        :rfc:`3261#section-20.37`
+        """
+        return self._get_token_list("Supported")
+
+    @supported.setter
+    def supported(self, value: list[str]) -> None:
+        self._set_token_list("Supported", value)
+
+    @property
     def to_address(self) -> Address:
         """
         The `To` header value value.
@@ -366,30 +418,17 @@ class Message:
         self.headers.set("To", str(value))
 
     @property
-    def record_route(self) -> list[Address]:
+    def unsupported(self) -> list[str]:
         """
-        The `Record-Route` header values.
+        The `Unsupported` header values.
 
-        :rfc:`3261#section-20.30`
+        :rfc:`3261#section-20.40`
         """
-        return self._get_address_list("Record-Route")
+        return self._get_token_list("Unsupported")
 
-    @record_route.setter
-    def record_route(self, value: list[Address]) -> None:
-        self._set_address_list("Record-Route", value)
-
-    @property
-    def route(self) -> list[Address]:
-        """
-        The `Route` header values.
-
-        :rfc:`3261#section-20.34`
-        """
-        return self._get_address_list("Route")
-
-    @route.setter
-    def route(self, value: list[Address]) -> None:
-        self._set_address_list("Route", value)
+    @unsupported.setter
+    def unsupported(self, value: list[str]) -> None:
+        self._set_token_list("Unsupported", value)
 
     @property
     def user_agent(self) -> str | None:
@@ -489,6 +528,19 @@ class Message:
             self.headers.remove(key)
         else:
             self.headers.set(key, value)
+
+    def _get_token_list(self, key: str) -> list[str]:
+        values = []
+        for value in self.headers.getlist(key):
+            if value := value.strip():
+                values += [x.strip() for x in value.split(",")]
+        return values
+
+    def _set_token_list(self, key: str, value: list[str]) -> None:
+        if value:
+            self.headers.set(key, ", ".join(value))
+        else:
+            self.headers.remove(key)
 
 
 class Request(Message):

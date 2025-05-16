@@ -428,6 +428,18 @@ Content-Length: 0
         self.assertEqual(request.record_route, [ADDRESS])
         self.assertMessageHeaders(request, ["Record-Route: <sip:example.com>"])
 
+    def test_header_require(self) -> None:
+        request = dummy_message()
+        self.assertEqual(request.require, [])
+
+        request.require = ["foo"]
+        self.assertEqual(request.require, ["foo"])
+        self.assertMessageHeaders(request, ["Require: foo"])
+
+        request.require = []
+        self.assertEqual(request.require, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_route(self) -> None:
         request = dummy_message()
 
@@ -455,6 +467,23 @@ Content-Length: 0
         self.assertEqual(request.subject, "Need more boxes")
         self.assertMessageHeaders(request, ["Subject: Need more boxes"])
 
+    def test_header_supported(self) -> None:
+        request = dummy_message()
+        self.assertEqual(request.supported, [])
+
+        request.supported = ["replaces", "timer"]
+        self.assertEqual(request.supported, ["replaces", "timer"])
+        self.assertMessageHeaders(request, ["Supported: replaces, timer"])
+
+        request.supported = []
+        self.assertEqual(request.supported, [])
+        self.assertMessageHeaders(request, [])
+
+        # Check parsing of an empty header.
+        request.headers.set("Supported", "")
+        self.assertEqual(request.supported, [])
+        self.assertMessageHeaders(request, ["Supported: "])
+
     def test_header_to_address(self) -> None:
         request = dummy_message()
 
@@ -464,6 +493,18 @@ Content-Length: 0
         request.to_address = ADDRESS
         self.assertEqual(request.to_address, ADDRESS)
         self.assertMessageHeaders(request, ["To: <sip:example.com>"])
+
+    def test_header_unsupported(self) -> None:
+        request = dummy_message()
+        self.assertEqual(request.unsupported, [])
+
+        request.unsupported = ["foo"]
+        self.assertEqual(request.unsupported, ["foo"])
+        self.assertMessageHeaders(request, ["Unsupported: foo"])
+
+        request.unsupported = []
+        self.assertEqual(request.unsupported, [])
+        self.assertMessageHeaders(request, [])
 
     def test_header_user_agent(self) -> None:
         request = dummy_message()
