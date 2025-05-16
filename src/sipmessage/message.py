@@ -175,6 +175,35 @@ class Message:
         return message
 
     @property
+    def accept(self) -> list[MediaType] | None:
+        """
+        The `Accept` header values.
+
+        A `None` value indicates the header is absent, while an
+        empty list indicates that no formats are acceptable.
+
+        :rfc:`3261#section-20.1`
+        """
+        found = False
+        headers: list[MediaType] = []
+        for value in self.headers.getlist("Accept"):
+            found = True
+            headers += MediaType.parse_many(value)
+        if found:
+            return headers
+        else:
+            return None
+
+    @accept.setter
+    def accept(self, value: list[MediaType] | None) -> None:
+        if value is None:
+            self.headers.remove("Accept")
+        elif not value:
+            self.headers.set("Accept", "")
+        else:
+            self.headers.setlist("Accept", [str(x) for x in value])
+
+    @property
     def authorization(self) -> AuthCredentials | None:
         """
         The `Authorization` header value.

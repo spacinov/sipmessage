@@ -279,6 +279,47 @@ Content-Length: 0
 
         self.assertEqual(bytes(message), message_bytes)
 
+    def test_header_accept(self) -> None:
+        request = dummy_message()
+
+        # Check the initial value.
+        self.assertEqual(request.accept, None)
+
+        # Add the header.
+        request.accept = [
+            MediaType(mime_type="application/sdp", parameters=Parameters(level="1")),
+            MediaType(mime_type="application/x-private"),
+            MediaType(mime_type="text/html"),
+        ]
+        self.assertEqual(
+            request.accept,
+            [
+                MediaType(
+                    mime_type="application/sdp", parameters=Parameters(level="1")
+                ),
+                MediaType(mime_type="application/x-private"),
+                MediaType(mime_type="text/html"),
+            ],
+        )
+        self.assertMessageHeaders(
+            request,
+            [
+                "Accept: application/sdp;level=1",
+                "Accept: application/x-private",
+                "Accept: text/html",
+            ],
+        )
+
+        # Clear the header.
+        request.accept = []
+        self.assertEqual(request.accept, [])
+        self.assertMessageHeaders(request, ["Accept: "])
+
+        # Remove the header.
+        request.accept = None
+        self.assertEqual(request.accept, None)
+        self.assertMessageHeaders(request, [])
+
     def test_header_authorization(self) -> None:
         request = dummy_message()
 
