@@ -364,6 +364,15 @@ Content-Length: 0
         self.assertEqual(request.date, None)
         self.assertMessageHeaders(request, [])
 
+    def test_header_expires(self) -> None:
+        request = dummy_message()
+
+        self.assertEqual(request.expires, None)
+
+        request.expires = 5
+        self.assertEqual(request.expires, 5)
+        self.assertMessageHeaders(request, ["Expires: 5"])
+
     def test_header_from_address(self) -> None:
         request = dummy_message()
 
@@ -382,6 +391,15 @@ Content-Length: 0
         request.max_forwards = 1
         self.assertEqual(request.max_forwards, 1)
         self.assertMessageHeaders(request, ["Max-Forwards: 1"])
+
+    def test_header_min_expires(self) -> None:
+        request = dummy_message()
+
+        self.assertEqual(request.min_expires, None)
+
+        request.min_expires = 60
+        self.assertEqual(request.min_expires, 60)
+        self.assertMessageHeaders(request, ["Min-Expires: 60"])
 
     def test_header_proxy_authenticate(self) -> None:
         request = dummy_message()

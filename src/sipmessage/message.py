@@ -275,6 +275,19 @@ class Message:
         self._set_optional_str("Date", str_value)
 
     @property
+    def expires(self) -> int | None:
+        """
+        The `Expires` header value.
+
+        :rfc:`3261#section-20.19`
+        """
+        return self._get_optional_int("Expires")
+
+    @expires.setter
+    def expires(self, value: int | None) -> None:
+        self._set_optional_int("Expires", value)
+
+    @property
     def from_address(self) -> Address:
         """
         The `From` header value.
@@ -299,6 +312,19 @@ class Message:
     @max_forwards.setter
     def max_forwards(self, value: int | None) -> None:
         self._set_optional_int("Max-Forwards", value)
+
+    @property
+    def min_expires(self) -> int | None:
+        """
+        The `Min-Expires` header value.
+
+        :rfc:`3261#section-20.23`
+        """
+        return self._get_optional_int("Min-Expires")
+
+    @min_expires.setter
+    def min_expires(self, value: int | None) -> None:
+        self._set_optional_int("Min-Expires", value)
 
     @property
     def proxy_authenticate(self) -> AuthChallenge | None:
