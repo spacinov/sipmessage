@@ -16,6 +16,9 @@ Headers
 .. autoclass:: sipmessage.CSeq
    :members:
 
+.. autoclass:: sipmessage.MediaType
+   :members:
+
 .. autoclass:: sipmessage.Parameters
    :members:
 

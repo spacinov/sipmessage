@@ -10,6 +10,7 @@ from typing import Union
 from .address import Address
 from .auth import AuthChallenge, AuthCredentials
 from .cseq import CSeq
+from .mediatype import MediaType
 from .uri import URI
 from .via import Via
 
@@ -174,6 +175,35 @@ class Message:
         return message
 
     @property
+    def accept(self) -> list[MediaType] | None:
+        """
+        The `Accept` header values.
+
+        A `None` value indicates the header is absent, while an
+        empty list indicates that no formats are acceptable.
+
+        :rfc:`3261#section-20.1`
+        """
+        found = False
+        headers: list[MediaType] = []
+        for value in self.headers.getlist("Accept"):
+            found = True
+            headers += MediaType.parse_many(value)
+        if found:
+            return headers
+        else:
+            return None
+
+    @accept.setter
+    def accept(self, value: list[MediaType] | None) -> None:
+        if value is None:
+            self.headers.remove("Accept")
+        elif not value:
+            self.headers.set("Accept", "")
+        else:
+            self.headers.setlist("Accept", [str(x) for x in value])
+
+    @property
     def authorization(self) -> AuthCredentials | None:
         """
         The `Authorization` header value.
@@ -226,17 +256,25 @@ class Message:
         self._set_optional_int("Content-Length", value)
 
     @property
-    def content_type(self) -> str | None:
+    def content_type(self) -> MediaType | None:
         """
         The `Content-Type` header value.
 
         :rfc:`3261#section-20.15`
         """
-        return self._get_optional_str("Content-Type")
+        str_value = self._get_optional_str("Content-Type")
+        if str_value is None:
+            return None
+        else:
+            return MediaType.parse(str_value)
 
     @content_type.setter
-    def content_type(self, value: str | None) -> None:
-        self._set_optional_str("Content-Type", value)
+    def content_type(self, value: MediaType | None) -> None:
+        if value is None:
+            str_value = None
+        else:
+            str_value = str(value)
+        self._set_optional_str("Content-Type", str_value)
 
     @property
     def cseq(self) -> CSeq:
