@@ -23,7 +23,7 @@
    :alt: Documentation
 
 The ``sipmessage`` project provides a set of Python helpers and structures
-for parsing and serialising SIP messages. It can be used to manipulate either
+for parsing and serialising SIP messages. It can be used to manipulate
 either entire requests and responses or individual header values.
 
 To learn more about ``sipmessage`` please `read the documentation`_.
