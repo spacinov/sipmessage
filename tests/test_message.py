@@ -105,6 +105,26 @@ From: <sip:alice@atlanta.com>
         )
         self.assertEqual(headers.keys(), ["Via", "From"])
 
+    def test_in(self) -> None:
+        headers = Headers()
+
+        self.assertFalse("from" in headers)
+        self.assertFalse("From" in headers)
+        self.assertFalse("to" in headers)
+        self.assertFalse("To" in headers)
+
+        headers.set("From", "Alice <sip:alice@biloxi.com>")
+        self.assertTrue("from" in headers)
+        self.assertTrue("From" in headers)
+        self.assertFalse("to" in headers)
+        self.assertFalse("To" in headers)
+
+        headers.set("To", "Bob <sip:bob@biloxi.com>")
+        self.assertTrue("from" in headers)
+        self.assertTrue("From" in headers)
+        self.assertTrue("to" in headers)
+        self.assertTrue("To" in headers)
+
     def test_set(self) -> None:
         headers = Headers()
 
@@ -318,6 +338,26 @@ Content-Length: 0
         # Remove the header.
         request.accept = None
         self.assertEqual(request.accept, None)
+
+    def test_header_allow(self) -> None:
+        request = dummy_message()
+
+        # Check the initial value (no restrictions).
+        self.assertIsNone(request.allow)
+
+        # Set the header.
+        request.allow = ["INVITE", "ACK", "OPTIONS"]
+        self.assertEqual(request.allow, ["INVITE", "ACK", "OPTIONS"])
+        self.assertMessageHeaders(request, ["Allow: INVITE, ACK, OPTIONS"])
+
+        # Clear the header (no methods supported).
+        request.allow = []
+        self.assertEqual(request.allow, [])
+        self.assertMessageHeaders(request, ["Allow: "])
+
+        # Remove the header (back to no restrictions).
+        request.allow = None
+        self.assertIsNone(request.allow)
         self.assertMessageHeaders(request, [])
 
     def test_header_authorization(self) -> None:
