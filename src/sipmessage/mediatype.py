@@ -23,7 +23,10 @@ class MediaType:
     """
 
     mime_type: str
+    "The MIME type, e.g. `application/sdp`."
+
     parameters: Parameters = dataclasses.field(default_factory=Parameters)
+    "The parameters of the media type."
 
     @classmethod
     def parse(cls, value: str) -> "MediaType":
