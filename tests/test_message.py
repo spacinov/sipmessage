@@ -281,6 +281,10 @@ Content-Length: 0
     def test_header_authorization(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.authorization)
+
+        # Add the header.
         request.authorization = AUTHORIZATION
         self.assertEqual(request.authorization, AUTHORIZATION)
         self.assertMessageHeaders(
@@ -292,16 +296,19 @@ Content-Length: 0
             ],
         )
 
+        # Remove the header.
         request.authorization = None
-        self.assertEqual(request.authorization, None)
+        self.assertIsNone(request.authorization)
         self.assertMessageHeaders(request, [])
 
     def test_header_call_id(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         with self.assertRaises(KeyError):
             request.call_id
 
+        # Add the header.
         request.call_id = "abc"
         self.assertEqual(request.call_id, "abc")
         self.assertMessageHeaders(request, ["Call-ID: abc"])
@@ -309,10 +316,18 @@ Content-Length: 0
     def test_header_contact(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         self.assertEqual(request.contact, [])
+
+        # Add the header.
         request.contact = [ADDRESS]
         self.assertEqual(request.contact, [ADDRESS])
         self.assertMessageHeaders(request, ["Contact: <sip:example.com>"])
+
+        # Remove the header.
+        request.contact = []
+        self.assertEqual(request.contact, [])
+        self.assertMessageHeaders(request, [])
 
     def test_header_content_language(self) -> None:
         request = dummy_message()
@@ -327,37 +342,49 @@ Content-Length: 0
 
         # Remove the header.
         request.content_language = None
-        self.assertEqual(request.content_language, None)
+        self.assertIsNone(request.content_language)
         self.assertMessageHeaders(request, [])
 
     def test_header_content_length(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.content_length)
+
+        # Add the header.
         request.content_length = 10
         self.assertEqual(request.content_length, 10)
         self.assertMessageHeaders(request, ["Content-Length: 10"])
 
+        # Remove the header.
         request.content_length = None
-        self.assertEqual(request.content_length, None)
+        self.assertIsNone(request.content_length)
         self.assertMessageHeaders(request, [])
 
     def test_header_content_type(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.content_type)
+
+        # Add the header.
         request.content_type = "application/sdp"
         self.assertEqual(request.content_type, "application/sdp")
         self.assertMessageHeaders(request, ["Content-Type: application/sdp"])
 
+        # Remove the header.
         request.content_type = None
-        self.assertEqual(request.content_type, None)
+        self.assertIsNone(request.content_type)
         self.assertMessageHeaders(request, [])
 
     def test_header_cseq(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         with self.assertRaises(KeyError):
             request.cseq
 
+        # Add the header.
         request.cseq = CSEQ
         self.assertEqual(request.cseq, CSEQ)
         self.assertMessageHeaders(request, ["CSeq: 1 OPTIONS"])
@@ -365,8 +392,10 @@ Content-Length: 0
     def test_header_date(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.date, None)
+        # Check the initial value.
+        self.assertIsNone(request.date)
 
+        # Set the header.
         request.date = datetime.datetime(
             2010, 11, 14, 0, 29, tzinfo=zoneinfo.ZoneInfo("Europe/Paris")
         )
@@ -376,25 +405,35 @@ Content-Length: 0
         )
         self.assertMessageHeaders(request, ["Date: Sat, 13 Nov 2010 23:29:00 GMT"])
 
+        # Remove the header.
         request.date = None
-        self.assertEqual(request.date, None)
+        self.assertIsNone(request.date)
         self.assertMessageHeaders(request, [])
 
     def test_header_expires(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.expires, None)
+        # Check the initial value.
+        self.assertIsNone(request.expires)
 
+        # Add the header.
         request.expires = 5
         self.assertEqual(request.expires, 5)
         self.assertMessageHeaders(request, ["Expires: 5"])
 
+        # Remove the header.
+        request.expires = None
+        self.assertIsNone(request.expires)
+        self.assertMessageHeaders(request, [])
+
     def test_header_from_address(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         with self.assertRaises(KeyError):
             request.from_address
 
+        # Add the header.
         request.from_address = ADDRESS
         self.assertEqual(request.from_address, ADDRESS)
         self.assertMessageHeaders(request, ["From: <sip:example.com>"])
@@ -424,24 +463,42 @@ Content-Length: 0
     def test_header_max_forwards(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.max_forwards, None)
+        # Check the initial value.
+        self.assertIsNone(request.max_forwards)
 
+        # Add the header.
         request.max_forwards = 1
         self.assertEqual(request.max_forwards, 1)
         self.assertMessageHeaders(request, ["Max-Forwards: 1"])
 
+        # Remove the header.
+        request.max_forwards = None
+        self.assertIsNone(request.max_forwards)
+        self.assertMessageHeaders(request, [])
+
     def test_header_min_expires(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.min_expires, None)
+        # Check the initial value.
+        self.assertIsNone(request.min_expires)
 
+        # Add the header.
         request.min_expires = 60
         self.assertEqual(request.min_expires, 60)
         self.assertMessageHeaders(request, ["Min-Expires: 60"])
 
+        # Remove the header.
+        request.min_expires = None
+        self.assertIsNone(request.min_expires)
+        self.assertMessageHeaders(request, [])
+
     def test_header_proxy_authenticate(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.proxy_authenticate)
+
+        # Add the header.
         request.proxy_authenticate = AUTHENTICATE
         self.assertEqual(request.proxy_authenticate, AUTHENTICATE)
         self.assertMessageHeaders(
@@ -453,13 +510,18 @@ Content-Length: 0
             ],
         )
 
+        # Remove the header.
         request.proxy_authenticate = None
-        self.assertEqual(request.proxy_authenticate, None)
+        self.assertIsNone(request.proxy_authenticate)
         self.assertMessageHeaders(request, [])
 
     def test_header_proxy_authorization(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.proxy_authorization)
+
+        # Add the header.
         request.proxy_authorization = AUTHORIZATION
         self.assertEqual(request.proxy_authorization, AUTHORIZATION)
         self.assertMessageHeaders(
@@ -471,18 +533,23 @@ Content-Length: 0
             ],
         )
 
+        # Remove the header.
         request.proxy_authorization = None
-        self.assertEqual(request.proxy_authorization, None)
+        self.assertIsNone(request.proxy_authorization)
         self.assertMessageHeaders(request, [])
 
     def test_header_proxy_require(self) -> None:
         request = dummy_message()
+
+        # Check the initial value.
         self.assertEqual(request.proxy_require, [])
 
+        # Add the header.
         request.proxy_require = ["foo"]
         self.assertEqual(request.proxy_require, ["foo"])
         self.assertMessageHeaders(request, ["Proxy-Require: foo"])
 
+        # Remove the header.
         request.proxy_require = []
         self.assertEqual(request.proxy_require, [])
         self.assertMessageHeaders(request, [])
@@ -490,20 +557,31 @@ Content-Length: 0
     def test_header_record_route(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         self.assertEqual(request.record_route, [])
 
+        # Add the header.
         request.record_route = [ADDRESS]
         self.assertEqual(request.record_route, [ADDRESS])
         self.assertMessageHeaders(request, ["Record-Route: <sip:example.com>"])
 
+        # Remove the header.
+        request.record_route = []
+        self.assertEqual(request.record_route, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_require(self) -> None:
         request = dummy_message()
+
+        # Check the initial value.
         self.assertEqual(request.require, [])
 
+        # Add the header.
         request.require = ["foo"]
         self.assertEqual(request.require, ["foo"])
         self.assertMessageHeaders(request, ["Require: foo"])
 
+        # Remove the header.
         request.require = []
         self.assertEqual(request.require, [])
         self.assertMessageHeaders(request, [])
@@ -511,38 +589,63 @@ Content-Length: 0
     def test_header_route(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         self.assertEqual(request.route, [])
 
+        # Add the header.
         request.route = [ADDRESS]
         self.assertEqual(request.route, [ADDRESS])
         self.assertMessageHeaders(request, ["Route: <sip:example.com>"])
 
+        # Remove the header.
+        request.route = []
+        self.assertEqual(request.route, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_server(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.server, None)
+        # Check the initial value.
+        self.assertIsNone(request.server)
 
+        # Add the header.
         request.server = "HomeServer v2"
         self.assertEqual(request.server, "HomeServer v2")
         self.assertMessageHeaders(request, ["Server: HomeServer v2"])
 
+        # Remove the header.
+        request.server = None
+        self.assertIsNone(request.server)
+        self.assertMessageHeaders(request, [])
+
     def test_header_subject(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.subject, None)
+        # Check the initial value.
+        self.assertIsNone(request.subject)
 
+        # Add the header.
         request.subject = "Need more boxes"
         self.assertEqual(request.subject, "Need more boxes")
         self.assertMessageHeaders(request, ["Subject: Need more boxes"])
 
+        # Remove the header.
+        request.subject = None
+        self.assertIsNone(request.subject)
+        self.assertMessageHeaders(request, [])
+
     def test_header_supported(self) -> None:
         request = dummy_message()
+
+        # Check the initial value.
         self.assertEqual(request.supported, [])
 
+        # Add the header.
         request.supported = ["replaces", "timer"]
         self.assertEqual(request.supported, ["replaces", "timer"])
         self.assertMessageHeaders(request, ["Supported: replaces, timer"])
 
+        # Remove the header.
         request.supported = []
         self.assertEqual(request.supported, [])
         self.assertMessageHeaders(request, [])
@@ -555,21 +658,27 @@ Content-Length: 0
     def test_header_to_address(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         with self.assertRaises(KeyError):
             request.to_address
 
+        # Add the header.
         request.to_address = ADDRESS
         self.assertEqual(request.to_address, ADDRESS)
         self.assertMessageHeaders(request, ["To: <sip:example.com>"])
 
     def test_header_unsupported(self) -> None:
         request = dummy_message()
+
+        # Check the initial value.
         self.assertEqual(request.unsupported, [])
 
+        # Add the header.
         request.unsupported = ["foo"]
         self.assertEqual(request.unsupported, ["foo"])
         self.assertMessageHeaders(request, ["Unsupported: foo"])
 
+        # Remove the header.
         request.unsupported = []
         self.assertEqual(request.unsupported, [])
         self.assertMessageHeaders(request, [])
@@ -577,30 +686,44 @@ Content-Length: 0
     def test_header_user_agent(self) -> None:
         request = dummy_message()
 
-        self.assertEqual(request.user_agent, None)
+        # Check the initial value.
+        self.assertIsNone(request.user_agent)
 
+        # Add the header.
         request.user_agent = "Tester/0.1.0"
         self.assertEqual(request.user_agent, "Tester/0.1.0")
         self.assertMessageHeaders(request, ["User-Agent: Tester/0.1.0"])
 
+        # Remove the header.
         request.user_agent = None
-        self.assertEqual(request.user_agent, None)
+        self.assertIsNone(request.user_agent)
         self.assertMessageHeaders(request, [])
 
     def test_header_via(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
         self.assertEqual(request.via, [])
 
+        # Add the header.
         request.via = [VIA]
         self.assertEqual(request.via, [VIA])
         self.assertMessageHeaders(
             request, ["Via: SIP/2.0/WSS mYn6S3lQaKjo.invalid;branch=z9hG4bKgD24yaj"]
         )
 
+        # Remove the header.
+        request.via = []
+        self.assertEqual(request.via, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_www_authenticate(self) -> None:
         request = dummy_message()
 
+        # Check the initial value.
+        self.assertIsNone(request.www_authenticate)
+
+        # Add the header.
         request.www_authenticate = AUTHENTICATE
         self.assertEqual(request.www_authenticate, AUTHENTICATE)
         self.assertMessageHeaders(
@@ -612,8 +735,9 @@ Content-Length: 0
             ],
         )
 
+        # Remove the header.
         request.www_authenticate = None
-        self.assertEqual(request.www_authenticate, None)
+        self.assertIsNone(request.www_authenticate)
         self.assertMessageHeaders(request, [])
 
     def test_not_bytes(self) -> None:
