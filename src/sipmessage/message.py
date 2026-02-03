@@ -301,6 +301,19 @@ class Message:
         self.headers.set("From", str(value))
 
     @property
+    def in_reply_to(self) -> list[str]:
+        """
+        The `In-Reply-To` header value.
+
+        :rfc:`3261#section-20.21`
+        """
+        return self._get_token_list("In-Reply-To")
+
+    @in_reply_to.setter
+    def in_reply_to(self, value: list[str]) -> None:
+        self._set_token_list("In-Reply-To", value)
+
+    @property
     def max_forwards(self) -> int | None:
         """
         The `Max-Forwards` header value.

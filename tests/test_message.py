@@ -383,6 +383,28 @@ Content-Length: 0
         self.assertEqual(request.from_address, ADDRESS)
         self.assertMessageHeaders(request, ["From: <sip:example.com>"])
 
+    def test_header_in_reply_to(self) -> None:
+        request = dummy_message()
+
+        # Check the initial value.
+        self.assertEqual(request.in_reply_to, [])
+
+        # Add the header.
+        request.in_reply_to = ["70710@saturn.bell-tel.com", "17320@saturn.bell-tel.com"]
+        self.assertEqual(
+            request.in_reply_to,
+            ["70710@saturn.bell-tel.com", "17320@saturn.bell-tel.com"],
+        )
+        self.assertMessageHeaders(
+            request,
+            ["In-Reply-To: 70710@saturn.bell-tel.com, 17320@saturn.bell-tel.com"],
+        )
+
+        # Remove the header.
+        request.in_reply_to = []
+        self.assertEqual(request.in_reply_to, [])
+        self.assertMessageHeaders(request, [])
+
     def test_header_max_forwards(self) -> None:
         request = dummy_message()
 
