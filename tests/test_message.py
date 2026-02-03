@@ -314,6 +314,22 @@ Content-Length: 0
         self.assertEqual(request.contact, [ADDRESS])
         self.assertMessageHeaders(request, ["Contact: <sip:example.com>"])
 
+    def test_header_content_language(self) -> None:
+        request = dummy_message()
+
+        # Check the initial value.
+        self.assertIsNone(request.content_language)
+
+        # Add the header.
+        request.content_language = "fr"
+        self.assertEqual(request.content_language, "fr")
+        self.assertMessageHeaders(request, ["Content-Language: fr"])
+
+        # Remove the header.
+        request.content_language = None
+        self.assertEqual(request.content_language, None)
+        self.assertMessageHeaders(request, [])
+
     def test_header_content_length(self) -> None:
         request = dummy_message()
 

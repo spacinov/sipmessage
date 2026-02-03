@@ -213,6 +213,19 @@ class Message:
         self._set_address_list("Contact", value)
 
     @property
+    def content_language(self) -> str | None:
+        """
+        The `Content-Language` header value.
+
+        :rfc:`3261#section-20.13`
+        """
+        return self._get_optional_str("Content-Language")
+
+    @content_language.setter
+    def content_language(self, value: str | None) -> None:
+        self._set_optional_str("Content-Language", value)
+
+    @property
     def content_length(self) -> int | None:
         """
         The `Content-Length` header value.
