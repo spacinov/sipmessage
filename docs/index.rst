@@ -18,7 +18,7 @@ sipmessage
    :alt: Coverage
 
 The ``sipmessage`` project provides a set of Python helpers and structures
-for parsing and serialising SIP messages. It can be used to manipulate either
+for parsing and serialising SIP messages. It can be used to manipulate
 either entire :doc:`requests and responses <messages>` or individual
 :doc:`header values <headers>`.
 
