@@ -120,6 +120,10 @@ class Headers:
         else:
             self._list.append((key, values))
 
+    def __contains__(self, key: str) -> bool:
+        ikey = key.lower()
+        return ikey in [k.lower() for (k, _values) in self._list]
+
     def __getitem__(self, key: str) -> str:
         ikey = key.lower()
         for k, values in self._list:
@@ -202,6 +206,22 @@ class Message:
             self.headers.set("Accept", "")
         else:
             self.headers.setlist("Accept", [str(x) for x in value])
+
+    @property
+    def allow(self) -> list[str] | None:
+        """
+        The `Allow` header values.
+
+        Returns `None` if the header is absent (UAC has no restrictions),
+        or a list of methods if the header is present.
+
+        :rfc:`3261#section-20.5`
+        """
+        return self._get_optional_token_list("Allow")
+
+    @allow.setter
+    def allow(self, value: list[str] | None) -> None:
+        self._set_optional_token_list("Allow", value)
 
     @property
     def authorization(self) -> AuthCredentials | None:
@@ -631,6 +651,33 @@ class Message:
             self.headers.remove(key)
         else:
             self.headers.set(key, value)
+
+    def _get_optional_token_list(self, key: str) -> list[str] | None:
+        """
+        Get a token list header, returning `None` if absent, an empty list if present
+        but empty.
+
+        This preserves the RFC 3261 distinction between absent and empty headers.
+        """
+        # Check if header is present at all.
+        if key not in self.headers:
+            return None
+
+        return self._get_token_list(key)
+
+    def _set_optional_token_list(self, key: str, value: list[str] | None) -> None:
+        """
+        Set a token list header, with `None` removing the header entirely.
+
+        This preserves the RFC 3261 distinction between absent and empty headers.
+        """
+        if value is None:
+            self.headers.remove(key)
+        elif value:
+            self._set_token_list(key, value)
+        else:
+            # Explicitly set empty header to preserve RFC 3261 semantics.
+            self.headers.set(key, "")
 
     def _get_token_list(self, key: str) -> list[str]:
         values = []
